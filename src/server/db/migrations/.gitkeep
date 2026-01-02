@@ -1,0 +1,29 @@
+# Directorio de migraciones
+
+Este directorio contiene las migraciones de base de datos generadas por Drizzle Kit.
+
+## ⚠️ IMPORTANTE
+
+Este template NO incluye migraciones de negocio. Las migraciones deben ser creadas por cada proyecto según sus necesidades.
+
+## Cómo generar migraciones
+
+1. Crear schemas en `src/server/db/schema/`
+2. Ejecutar: `npm run db:generate`
+3. Revisar la migración generada en este directorio
+4. Aplicar con: `npm run db:migrate`
+
+## Reglas de migraciones
+
+- ✅ Siempre versionadas (nunca editar migraciones ya aplicadas)
+- ✅ Una migración por cambio lógico
+- ✅ Revisar antes de aplicar en producción
+- ✅ Incluir rollback plan si es crítico
+
+## Schemas recomendados
+
+- `app`: Tablas de negocio principal
+- `audit`: Auditoría y logs
+- `scraping`: Datos de scraping/integraciones externas
+
+Nunca usar el schema `public`.

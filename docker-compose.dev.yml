@@ -1,0 +1,66 @@
+# Solo para desarrollo local con Docker Compose
+version: '3.8'
+
+services:
+  # Aplicación en modo desarrollo
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/lycsa_app_dev
+      - S3_ENDPOINT=http://minio:9000
+      - S3_REGION=us-east-1
+      - S3_ACCESS_KEY_ID=minioadmin
+      - S3_SECRET_ACCESS_KEY=minioadmin
+      - S3_BUCKET_NAME=lycsa-files-dev
+      - S3_FORCE_PATH_STYLE=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - minio
+    networks:
+      - lycsa-network
+    command: npm run dev
+
+  # PostgreSQL
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=lycsa_app_dev
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    networks:
+      - lycsa-network
+
+  # MinIO
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-dev-data:/data
+    networks:
+      - lycsa-network
+
+volumes:
+  postgres-dev-data:
+  minio-dev-data:
+
+networks:
+  lycsa-network:
+    driver: bridge

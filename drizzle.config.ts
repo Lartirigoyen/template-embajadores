@@ -1,8 +1,8 @@
 import type { Config } from 'drizzle-kit';
-import { loadEnvConfig } from '@next/env';
+import { config } from 'dotenv';
 
-// Cargar variables de entorno
-loadEnvConfig(process.cwd());
+// Cargar variables de entorno desde .env
+config();
 
 export default {
   schema: './src/server/db/schema/*',

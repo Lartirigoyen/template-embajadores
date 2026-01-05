@@ -106,9 +106,18 @@ await db.select().from(usuarios).where(eq(usuarios.activo, true));
 **Migraciones**:
 ```bash
 npm run db:generate  # Generar
-npm run db:migrate   # Aplicar
+npm run db:migrate   # Aplicar (manual)
+npm run db:push      # Aplicar (auto en dev)
 npm run db:studio    # Ver esquema
 ```
+
+**REGLA CRÍTICA - Migraciones**:
+- NUNCA modificar archivos de migración existentes (src/server/db/migrations/)
+- SIEMPRE crear nueva migración para cambios: modificar schema → `npm run db:generate`
+- Las migraciones son inmutables una vez creadas
+- Razón: Evita inconsistencias entre entornos (dev/staging/prod)
+
+**Nota**: `npm run dev` ejecuta automáticamente `db:push` antes de iniciar el servidor.
 
 ### Tipos de Datos
 
@@ -247,6 +256,72 @@ if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'Usuario no encontr
 if (!user.activo) throw new TRPCError({ code: 'FORBIDDEN', message: 'Usuario inactivo' });
 ```
 
+### Transacciones DB (OBLIGATORIO)
+
+**REGLA CRÍTICA**: TODA mutación que impacte la BD DEBE usar transacciones con try-catch-rollback.
+
+```typescript
+import { db } from '~/server/db';
+import { TRPCError } from '@trpc/server';
+
+export const orderRouter = createTRPCRouter({
+  create: publicProcedure
+    .input(createOrderSchema)
+    .mutation(async ({ input }) => {
+      try {
+        // Iniciar transacción
+        const result = await db.transaction(async (tx) => {
+          // Operación 1: Crear orden
+          const [order] = await tx.insert(ordenes)
+            .values({
+              usuarioId: input.usuarioId,
+              total: input.total,
+            })
+            .returning();
+
+          // Operación 2: Crear items de orden
+          await tx.insert(ordenItems).values(
+            input.items.map(item => ({
+              ordenId: order.id,
+              productoId: item.productoId,
+              cantidad: item.cantidad,
+            }))
+          );
+
+          // Operación 3: Actualizar inventario
+          for (const item of input.items) {
+            await tx.update(productos)
+              .set({ 
+                stock: sql`stock - ${item.cantidad}`,
+                fechaActualizacion: new Date()
+              })
+              .where(eq(productos.id, item.productoId));
+          }
+
+          return order;
+        });
+
+        // Si llegamos aquí, COMMIT automático
+        return { id: result.idPublico };
+
+      } catch (error) {
+        // ROLLBACK automático en caso de error
+        console.error('Error creando orden:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error al procesar la orden',
+        });
+      }
+    }),
+});
+```
+
+**Sin transacción** (solo para operaciones únicas sin dependencias):
+```typescript
+// OK para inserts/updates simples sin relaciones
+const [user] = await db.insert(usuarios).values(input).returning();
+```
+
 ### Variables Entorno
 
 ```typescript
@@ -299,14 +374,92 @@ export function Button({ variant = 'primary', className, ...props }: ButtonProps
 import { forwardRef } from 'react';
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className, ...props }, ref) => (
+  ({ label, error, required, className, ...props }, ref) => (
     <div>
-      {label && <label className="text-sm font-bold">{label}</label>}
-      <input ref={ref} className={cn('w-full rounded-md border px-3 py-2', error && 'border-red-500', className)} {...props} />
+      {label && (
+        <label className="text-sm font-bold">
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+      <input 
+        ref={ref} 
+        className={cn(
+          'w-full rounded-md border px-3 py-2', 
+          error && 'border-red-500',
+          className
+        )} 
+        required={required}
+        {...props} 
+      />
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   )
 );
+```
+
+### Validación de Formularios
+
+**REGLAS OBLIGATORIAS**:
+
+1. **Campos requeridos**: Asterisco rojo (*) en label
+2. **Validación cliente**: SIEMPRE validar antes de enviar
+3. **Estado error**: Bordes rojos en campos inválidos
+4. **Mensajes error**: Texto rojo debajo del campo
+
+```typescript
+'use client';
+import { useState } from 'react';
+import { z } from 'zod';
+
+const formSchema = z.object({
+  email: z.string().email('Email inválido'),
+  nombre: z.string().min(2, 'Mínimo 2 caracteres'),
+});
+
+export function UserForm() {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+    
+    // Validar antes de enviar
+    const result = formSchema.safeParse(data);
+    if (!result.success) {
+      const newErrors: Record<string, string> = {};
+      result.error.issues.forEach(issue => {
+        newErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(newErrors);
+      return; // NO enviar si hay errores
+    }
+    
+    setErrors({});
+    // Enviar datos validados
+    mutation.mutate(result.data);
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input
+        name="email"
+        label="Email"
+        type="email"
+        required
+        error={errors.email}
+      />
+      <Input
+        name="nombre"
+        label="Nombre"
+        required
+        error={errors.nombre}
+      />
+      <Button type="submit">Guardar</Button>
+    </form>
+  );
+}
 ```
 
 ### Accesibilidad
@@ -344,6 +497,7 @@ const create = api.user.create.useMutation({
 **Base de Datos**:
 - [ ] Nombres español, campos auditoría, esquema correcto
 - [ ] Soft delete (NO DELETE), índices, migration generada
+- [ ] NUNCA modificar migraciones existentes, crear nueva
 
 **Código**:
 - [ ] TypeScript sin errores, ESLint, Prettier
@@ -355,20 +509,26 @@ const create = api.user.create.useMutation({
 - [ ] Props tipadas
 - [ ] Colores Lycsa, fuente Aller
 - [ ] Accesibilidad (aria-*, labels)
+- [ ] Campos requeridos con asterisco rojo (*)
+- [ ] Validación cliente antes de enviar
+- [ ] Bordes rojos en campos con error
 
 **tRPC**:
 - [ ] Inputs con Zod
 - [ ] Errores TRPCError
 - [ ] SuperJSON en httpBatchLink
+- [ ] Transacciones para mutaciones que impactan BD
+- [ ] Try-catch-rollback en operaciones múltiples
 
 ## Scripts
 
 ```bash
-npm run dev         # Dev server :3000
+npm run dev         # Dev server :3000 (ejecuta migraciones automáticamente)
 npm run build       # Build producción
 npm run db:studio   # Drizzle Studio
 npm run db:generate # Generar migration
-npm run db:migrate  # Aplicar migrations
+npm run db:migrate  # Aplicar migrations (manual)
+npm run db:push     # Aplicar migrations (auto)
 npm run lint        # ESLint
 npm run format      # Prettier
 npm run type-check  # TypeScript

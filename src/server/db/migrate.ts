@@ -5,8 +5,10 @@ import { config } from 'dotenv';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 
-// Cargar variables de entorno
-config();
+// Cargar variables de entorno desde .env.local (desarrollo) o .env (producción)
+// Next.js usa .env.local por convención para desarrollo local
+config({ path: '.env.local' });
+config({ path: '.env' });
 
 async function runMigrations() {
   const migrationsFolder = resolve('./src/server/db/migrations');

@@ -4,7 +4,7 @@
   "description": "Template fullstack para embajadores - Next.js + tRPC + Drizzle",
   "private": true,
   "scripts": {
-    "dev": "npm run db:push && next dev",
+    "dev": "npm run db:migrate && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,8 +12,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "tsx src/server/db/migrate.ts",
+    "db:migrate": "tsx src/server/db/migrate.ts",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

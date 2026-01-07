@@ -1,6 +1,6 @@
 # AI Development Rules - Template Embajadores Lycsa Suite
 
-Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructions/database-actions-guide.md` y `instructions/DESIGN_SYSTEM.md`.
+Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructions/database-actions-guide.md`, `instructions/DESIGN_SYSTEM.md`, y **`instructions/SECURITY.md`**.
 
 ## Stack Tecnológico
 
@@ -14,6 +14,109 @@ Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructi
 **UI**: React 19 | Tailwind v3.4.17 | Custom components (NO Shadcn/MUI)
 **Fuente**: Aller Regular 400, Bold 700 desde /fonts/
 **Docker**: Multi-stage Node 20-alpine, standalone output, nextjs:nodejs user
+**Auth**: bcryptjs para hashing, jose para JWT (si aplica)
+
+---
+
+## 🔒 SEGURIDAD (OBLIGATORIO)
+
+**LEER COMPLETO: `SECURITY.md` antes de desarrollar.**
+
+### Requisitos Críticos de Seguridad
+
+1. **TODA aplicación DEBE tener sistema de usuarios y autenticación**
+   - NO desarrollar aplicaciones sin login a menos que haya aprobación explícita
+   - Sistema de roles implementado (admin, usuario, etc.)
+
+2. **Contraseñas OBLIGATORIAS**:
+   - ✅ Mínimo 8 caracteres
+   - ✅ Al menos 1 mayúscula
+   - ✅ Al menos 1 número
+   - ✅ Recomendado: 1 carácter especial (@$!%*?&)
+   - ✅ SIEMPRE hash con bcrypt (saltRounds >= 12)
+   - ❌ NUNCA almacenar contraseñas en texto plano
+
+3. **Tabla usuarios mínima requerida**:
+```typescript
+export const usuarios = appSchema.table('usuarios', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  idPublico: uuid('id_publico').notNull().defaultRandom().unique(),
+  
+  // Autenticación
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+  
+  // Datos personales
+  nombre: varchar('nombre', { length: 100 }).notNull(),
+  apellido: varchar('apellido', { length: 100 }).notNull(),
+  
+  // Control acceso
+  rol: varchar('rol', { length: 50 }).notNull().default('usuario'),
+  ultimoAcceso: timestamp('ultimo_acceso', { withTimezone: true }),
+  
+  // Auditoría obligatoria
+  fechaCreacion: timestamp('fecha_creacion', { withTimezone: true }).notNull().defaultNow(),
+  fechaActualizacion: timestamp('fecha_actualizacion', { withTimezone: true }).notNull().defaultNow(),
+  activo: boolean('activo').notNull().default(true),
+  adicional: jsonb('adicional').notNull().default({}),
+});
+```
+
+4. **Validación de contraseñas con Zod**:
+```typescript
+export const passwordSchema = z
+  .string()
+  .min(8, 'La contraseña debe tener al menos 8 caracteres')
+  .regex(/[A-Z]/, 'Debe contener al menos una letra mayúscula')
+  .regex(/[0-9]/, 'Debe contener al menos un número')
+  .regex(/[@$!%*?&]/, 'Se recomienda incluir un carácter especial');
+```
+
+5. **Hashing de contraseñas**:
+```typescript
+import bcrypt from 'bcryptjs';
+
+// Al registrar
+const passwordHash = await bcrypt.hash(password, 12);
+
+// Al validar
+const valida = await bcrypt.compare(password, user.passwordHash);
+```
+
+6. **Creación de usuarios**:
+   - Solo administradores pueden crear usuarios
+   - NO implementar registro público
+   - Admin debe dar de alta todos los usuarios
+
+7. **Auditoría OBLIGATORIA**:
+   - Tabla `auditoria` en schema `audit`
+   - Registrar: login/logout, cambios de contraseña, operaciones críticas
+   - Incluir: usuario, acción, IP, user agent, timestamp
+
+8. **IDs públicos (UUID)**:
+   - ❌ NUNCA exponer IDs autoincrementales al frontend
+   - ✅ SIEMPRE usar `idPublico` (UUID) en API/frontend
+   - Previene enumeración y ataques dirigidos
+
+9. **Variables de entorno seguras**:
+```typescript
+const envSchema = z.object({
+  JWT_SECRET: z.string().min(32, 'Mínimo 32 caracteres'),
+  SESSION_SECRET: z.string().min(32, 'Mínimo 32 caracteres'),
+  DATABASE_URL: z.string().url(),
+});
+```
+
+10. **Instalación de dependencias de seguridad**:
+```bash
+npm install bcryptjs
+npm install -D @types/bcryptjs
+npm install jose  # Para JWT si aplica
+```
+
+**Ver `SECURITY.md` para guía completa de implementación.**
+
+---
 
 ## Convenciones Base de Datos
 
@@ -115,7 +218,7 @@ npm run db:studio    # Ver esquema
 - NUNCA modificar archivos de migración existentes (src/server/db/migrations/)
 - SIEMPRE crear nueva migración para cambios: modificar schema → `npm run db:generate`
 - Las migraciones son inmutables una vez creadas
-- Razón: Evita inconsistencias entre entornos (dev/staging/prod)
+- Razón: Evita inconsistencias entre entornos (dev/qa/prod)
 
 **Nota**: `npm run dev` ejecuta automáticamente `db:push` antes de iniciar el servidor.
 

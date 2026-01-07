@@ -88,18 +88,22 @@ cd template-embajadores
 # 2. Instalar dependencias
 npm install
 
-# 3. Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus valores
+# 3. Configurar variables de entorno para desarrollo local
+cp .env.local.example .env.local
+# Editar .env.local con tus valores
+# IMPORTANTE: .env.local está en .gitignore y es solo para desarrollo local
 
 # 4. Levantar servicios (PostgreSQL + MinIO)
 docker compose -f docker-compose.dev.yml up -d db minio
 
-# 5. Ejecutar migraciones (cuando tengas schemas)
-npm run db:generate
-npm run db:migrate
+# 5. Crear tus schemas de base de datos en src/server/db/schema/
+# Ver sección "Crear tu Primer Schema" más abajo
 
-# 6. Iniciar desarrollo
+# 6. Generar y aplicar migraciones
+npm run db:generate   # Genera archivos de migración desde tus schemas
+npm run db:migrate    # Aplica las migraciones a la base de datos
+
+# 7. Iniciar desarrollo
 npm run dev
 ```
 
@@ -116,6 +120,10 @@ La aplicación estará disponible en: http://localhost:3000
 ### Desarrollo
 
 ```bash
+# Configurar variables de entorno primero
+cp .env.local.example .env.local
+# Editar .env.local si es necesario
+
 # Levantar todo el entorno de desarrollo
 docker compose -f docker-compose.dev.yml up
 
@@ -125,6 +133,10 @@ docker compose -f docker-compose.dev.yml up
 ### Producción
 
 ```bash
+# Configurar variables de entorno para producción
+cp .env.example .env
+# Editar .env con valores de producción
+
 # Build y ejecución
 docker compose up --build
 
@@ -657,11 +669,120 @@ export default function ProductosPage() {
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
 - [Zod Docs](https://zod.dev)
 
+## 🔧 Scripts NPM Disponibles
+
+### Desarrollo
+- `npm run dev` - Aplica migraciones y levanta el servidor de desarrollo
+- `npm run build` - Build de producción
+- `npm start` - Inicia el servidor de producción
+
+### Base de Datos
+- `npm run db:generate` - **Genera archivos de migración** desde tus schemas de Drizzle
+- `npm run db:migrate` - **Aplica las migraciones** generadas a la base de datos
+- `npm run db:push` - **Push directo** de schema a DB (sin generar archivos de migración, útil para desarrollo rápido)
+- `npm run db:studio` - Abre Drizzle Studio para visualizar la base de datos
+
+### Calidad de Código
+- `npm run lint` - Ejecuta ESLint
+- `npm run format` - Formatea código con Prettier
+- `npm run format:check` - Verifica formato sin modificar
+- `npm run type-check` - Verifica tipos de TypeScript
+
+### Flujo de Trabajo Recomendado
+
+**Desarrollo con Migraciones (Recomendado para producción):**
+```bash
+# 1. Crear o modificar schema
+# 2. Generar migración
+npm run db:generate
+
+# 3. Revisar archivos en src/server/db/migrations/
+# 4. Aplicar migración
+npm run db:migrate
+
+# 5. Commitear schema + archivos de migración
+git add src/server/db/schema src/server/db/migrations
+git commit -m "feat: agregar tabla productos"
+```
+
+**Desarrollo Rápido (Solo para experimentar):**
+```bash
+# Push directo sin crear archivos de migración
+npm run db:push
+# ⚠️ No usar en producción, no deja historial de cambios
+```
+
+## 🔍 Troubleshooting
+
+### Variables de entorno no se cargan
+
+**Problema:** La app no encuentra DATABASE_URL u otras variables.
+
+**Solución:**
+```bash
+# Asegúrate de tener .env.local para desarrollo
+cp .env.local.example .env.local
+
+# Verifica que el archivo existe
+ls -la .env.local
+
+# Next.js carga automáticamente:
+# 1. .env.local (prioridad alta, solo desarrollo)
+# 2. .env (fallback)
+```
+
+### Error: "No migrations found"
+
+**Problema:** Al ejecutar `npm run db:migrate` dice que no hay migraciones.
+
+**Solución:**
+```bash
+# 1. Asegúrate de tener schemas definidos en src/server/db/schema/
+# 2. Genera las migraciones primero
+npm run db:generate
+
+# 3. Ahora aplica las migraciones
+npm run db:migrate
+```
+
+### Error de conexión a PostgreSQL
+
+**Problema:** Cannot connect to database.
+
+**Solución:**
+```bash
+# Verifica que PostgreSQL está corriendo
+docker compose -f docker-compose.dev.yml up -d db
+
+# Verifica que DATABASE_URL es correcto en .env.local
+# Desarrollo local: postgresql://postgres:postgres@localhost:5432/lycsa_app
+# Docker: postgresql://postgres:postgres@db:5432/lycsa_app
+```
+
+### Diferencia entre db:push y db:migrate
+
+**db:generate + db:migrate (Recomendado):**
+- ✅ Crea archivos de migración versionados
+- ✅ Historial de cambios rastreable
+- ✅ Rollback posible
+- ✅ Usar en producción
+- ⚠️ Requiere dos pasos
+
+**db:push (Solo desarrollo):**
+- ✅ Rápido para experimentar
+- ✅ Un solo comando
+- ❌ Sin historial de cambios
+- ❌ No usar en producción
+- ❌ No permite rollback
+
 ## ⚠️ Notas Importantes
 
 - ✅ Este template NO incluye tablas de ejemplo
 - ✅ NO crear tablas en el schema `public`
 - ✅ Siempre usar soft delete (`active = false`)
+- ✅ Usar `.env.local` para desarrollo local (está en .gitignore)
+- ✅ Usar `.env` para valores por defecto o CI/CD
+- ✅ Generar migraciones con `db:generate` + `db:migrate` para producción
 - ✅ Siempre incluir los 4 campos obligatorios
 - ✅ Usar helpers `withUpdatedAt` en updates
 - ✅ Usar helpers `softDelete` en lugar de DELETE

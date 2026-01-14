@@ -7,7 +7,7 @@ config({ path: '.env.local' });
 config({ path: '.env' });
 
 export default {
-  schema: './src/server/db/schema/*',
+  schema: './src/server/db/schema/**/*.ts',
   out: './src/server/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {

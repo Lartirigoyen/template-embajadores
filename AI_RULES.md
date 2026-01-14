@@ -40,10 +40,13 @@ Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructi
 
 ### Template Drizzle Completo
 
+Definir el schema con `pgSchema` y crear las tablas usando `appSchema.table`:
 ```typescript
-import { pgTable, bigserial, uuid, timestamp, boolean, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgSchema, bigserial, uuid, timestamp, boolean, jsonb, index } from 'drizzle-orm/pg-core';
 
-export const usuarios = pgTable('usuarios', {
+const appSchema = pgSchema('app');
+
+export const usuarios = appSchema.table('usuarios', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),
   idPublico: uuid('id_publico').notNull().defaultRandom().unique(),
   
@@ -59,6 +62,12 @@ export const usuarios = pgTable('usuarios', {
 }, (table) => ({
   idPublicoIdx: index('idx_usuarios_id_publico').on(table.idPublico),
 }));
+```
+
+**NUNCA usar `pgTable` directamente**:
+```typescript
+// NO USAR
+export const users = pgTable('users', { ... });
 ```
 
 ### Flujo Frontend ↔ Backend ↔ DB
@@ -103,22 +112,6 @@ await db.select().from(usuarios).where(eq(usuarios.activo, true));
 
 **Helpers disponibles**: `src/server/db/helpers/` (softDelete, withUpdatedAt, isActive)
 
-**Migraciones**:
-```bash
-npm run db:generate  # Generar
-npm run db:migrate   # Aplicar (manual)
-npm run db:push      # Aplicar (auto en dev)
-npm run db:studio    # Ver esquema
-```
-
-**REGLA CRÍTICA - Migraciones**:
-- NUNCA modificar archivos de migración existentes (src/server/db/migrations/)
-- SIEMPRE crear nueva migración para cambios: modificar schema → `npm run db:generate`
-- Las migraciones son inmutables una vez creadas
-- Razón: Evita inconsistencias entre entornos (dev/staging/prod)
-
-**Nota**: `npm run dev` ejecuta automáticamente `db:push` antes de iniciar el servidor.
-
 ### Tipos de Datos
 
 | Uso | Drizzle | Ejemplo |
@@ -132,6 +125,25 @@ npm run db:studio    # Ver esquema
 | Booleano | boolean('campo') | activo |
 | JSON | jsonb('campo') | adicional |
 | Decimal | decimal('campo', { precision: 10, scale: 2 }) | precio |
+
+### Migraciones:
+
+```bash
+npm run db:generate  # Generar
+npm run db:migrate   # Aplicar (manual)
+npm run db:push      # Aplicar (auto en dev)
+npm run db:studio    # Ver esquema
+```
+
+**REGLA CRÍTICA - Migraciones**:
+- Usar `CREATE SCHEMA IF NOT EXISTS`, `CREATE TABLE IF NOT EXISTS` y `CREATE INDEX IF NOT EXISTS`
+- NUNCA usar `CREATE SCHEMA` sin `IF NOT EXISTS`
+- NUNCA modificar archivos de migración existentes (src/server/db/migrations/)
+- SIEMPRE crear nueva migración para cambios: modificar schema → `npm run db:generate`
+- Las migraciones son inmutables una vez creadas
+- Razón: Evita inconsistencias entre entornos (dev/staging/prod)
+
+**Nota**: `npm run dev` ejecuta automáticamente `db:generate` y `db:push` antes de iniciar el servidor.
 
 ## Sistema de Diseño Lycsa
 

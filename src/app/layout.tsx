@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { TRPCProvider } from './_trpc/Provider';
 import { ToastProvider } from '~/ui/components';
+import { AuthProvider } from '~/app/store/AuthProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -16,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <TRPCProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </TRPCProvider>
+        <AuthProvider>
+          <TRPCProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </TRPCProvider>
+        </AuthProvider>
       </body>
     </html>
   );

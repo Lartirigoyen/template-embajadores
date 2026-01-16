@@ -6,6 +6,8 @@ Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructi
 
 **Core**: Next.js 15.5.9 App Router | TypeScript 5.7.2 strict | Node 20+ Alpine
 **API**: tRPC v11.0.0 (publicProcedure, SuperJSON en httpBatchLink)
+**Auth**: Keycloak-JS v26+ (login-required, PKCE S256)
+**State**: Redux Toolkit v2+ (thunks para async auth)
 **ORM**: Drizzle v0.36.4 (pg driver, schemas: app/audit/scraping)
 **DB**: PostgreSQL con pooling
 **Validación**: Zod v3.24.1
@@ -14,6 +16,92 @@ Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructi
 **UI**: React 19 | Tailwind v3.4.17 | Custom components (NO Shadcn/MUI)
 **Fuente**: Aller Regular 400, Bold 700 desde /fonts/
 **Docker**: Multi-stage Node 20-alpine, standalone output, nextjs:nodejs user
+
+## Autenticación con Keycloak
+
+### ❌ NUNCA Hacer
+
+- ❌ Crear formularios de login/registro manuales
+- ❌ Crear tablas de usuarios con contraseñas en la DB
+- ❌ Usar NextAuth o cualquier otra librería de auth
+- ❌ Usar otro gestor de estado para auth (Zustand, Jotai)
+- ❌ Ignorar el estado `isLoading` (siempre mostrar loader durante verificación)
+- ❌ Manejar tokens manualmente sin Keycloak
+- ❌ Configurar cliente Keycloak como Confidential (debe ser Public)
+
+### ✅ SIEMPRE Hacer
+
+- ✅ Usar `keycloak-js` + Redux Toolkit para manejo de estado
+- ✅ Configurar cliente Keycloak como **Public** (sin client secret)
+- ✅ Usar `AuthProvider` que ejecuta `checkAuthThunk` automáticamente
+- ✅ Mostrar loader mientras `isLoading === true`
+- ✅ Verificar tokens en el backend si proteges tRPC procedures
+- ✅ Usar `onLoad: 'login-required'` (redirige automáticamente al login)
+- ✅ PKCE con método S256 para seguridad adicional
+- ✅ Acceder al estado con `useAppSelector(selectAuth)`
+
+### Estructura de Autenticación
+
+```
+src/app/
+├── config/
+│   └── keycloak.ts          # Configuración y singleton de Keycloak
+├── store/
+│   ├── AuthProvider.tsx     # Provider que ejecuta checkAuthThunk
+│   ├── ReduxProvider.tsx    # Provider de Redux
+│   ├── store.ts             # Configuración del store
+│   ├── hooks.ts             # useAppDispatch, useAppSelector
+│   ├── index.ts             # Exportaciones centralizadas
+│   ├── slices/
+│   │   └── authSlice.ts     # Estado de auth + extraReducers
+│   └── thunks/
+│       └── authThunks.ts    # checkAuthThunk, logoutThunk
+```
+
+### Variables de Entorno
+
+```env
+NEXT_PUBLIC_KEYCLOAK_URL=https://auth.lartirigoyen.internal
+NEXT_PUBLIC_KEYCLOAK_REALM=larti
+NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=tu-client-id
+```
+
+### Uso en Componentes
+
+```tsx
+'use client';
+import { useAppSelector, useAppDispatch, selectAuth, logoutThunk } from '~/app/store';
+
+function MyComponent() {
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated, isLoading } = useAppSelector(selectAuth);
+  
+  if (isLoading) return <Loader />;
+  if (!isAuthenticated) return null;
+  
+  return (
+    <div>
+      <p>Hola {user?.firstName}</p>
+      <button onClick={() => dispatch(logoutThunk())}>Salir</button>
+    </div>
+  );
+}
+```
+
+### Proteger tRPC Procedures
+
+```typescript
+import { TRPCError } from '@trpc/server';
+
+export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  const token = ctx.req.headers.authorization?.replace('Bearer ', '');
+  if (!token) throw new TRPCError({ code: 'UNAUTHORIZED' });
+  
+  // Verificar token con Keycloak o JWT library
+  const decoded = await verifyKeycloakToken(token);
+  return next({ ctx: { ...ctx, user: decoded } });
+});
+```
 
 ## Convenciones Base de Datos
 

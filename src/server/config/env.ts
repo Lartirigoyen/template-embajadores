@@ -21,6 +21,11 @@ const envSchema = z.object({
 
   // Next.js
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+
+  // Keycloak SSO Silencioso (public client - no secret)
+  NEXT_PUBLIC_KEYCLOAK_URL: z.string().url().default('https://auth.lartirigoyen.internal'),
+  NEXT_PUBLIC_KEYCLOAK_REALM: z.string().default('larti'),
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: z.string().min(1),
 });
 
 export const env = envSchema.parse(process.env);

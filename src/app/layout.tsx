@@ -3,6 +3,7 @@ import { TRPCProvider } from './_trpc/Provider';
 import { ToastProvider } from '~/ui/components';
 import { AuthProvider } from '~/app/store/AuthProvider';
 import './globals.css';
+import { ReduxProvider } from './store/ReduxProvider';
 
 export const metadata: Metadata = {
   title: 'Template Embajadores - Lycsa Suite',
@@ -17,13 +18,15 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <AuthProvider>
-          <TRPCProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </TRPCProvider>
-        </AuthProvider>
+        <ReduxProvider>
+          <AuthProvider>
+            <TRPCProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </TRPCProvider>
+          </AuthProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

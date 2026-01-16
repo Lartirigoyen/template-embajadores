@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { api } from './_trpc/Provider';
 import { Button, Card, Badge, Loader, Modal, useToast } from '~/ui/components';
+import { useAppSelector, selectUser } from '~/app/store';
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToast } = useToast();
+  const user = useAppSelector(selectUser);
 
   const healthQuery = api.system.health.useQuery();
   const dbStatusQuery = api.system.dbStatus.useQuery();
@@ -41,11 +43,17 @@ export default function HomePage() {
             {/* User Profile */}
             <div className="flex items-center gap-2">
               <div className="text-right">
-                <p className="text-sm font-aller-bold text-gray-900">Usuario Demo</p>
-                <p className="text-xs text-gray-500 font-aller-light">Desarrollador</p>
+                <p className="text-sm font-aller-bold text-gray-900">
+                  {user?.firstName ? user.firstName + ' ' + user.lastName : 'Usuario' }
+                </p>
+                <p className="text-xs text-gray-500 font-aller-light">
+                  {user?.username || 'Sin usuario'}
+                </p>
               </div>
               <div className="w-10 h-10 bg-lycsa-verde-100 rounded-full flex items-center justify-center">
-                <span className="text-lycsa-verde-700 font-aller-bold text-sm">UD</span>
+                <span className="text-lycsa-verde-700 font-aller-bold text-sm">
+                  {user?.firstName ? user.firstName[0] + (user.lastName?.[0] || '') : 'U'}
+                </span>
               </div>
             </div>
           </div>

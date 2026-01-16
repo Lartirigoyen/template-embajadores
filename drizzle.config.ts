@@ -15,5 +15,5 @@ export default {
   },
   schemaFilter: ['app', 'audit', 'scraping'],
   verbose: true,
-  strict: true,
+  strict: false,
 } satisfies Config;

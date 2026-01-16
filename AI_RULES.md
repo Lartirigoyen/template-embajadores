@@ -145,23 +145,29 @@ npm run db:studio    # Ver esquema
 
 **Nota**: `npm run dev` ejecuta automáticamente `db:generate` y `db:push` antes de iniciar el servidor.
 
-## Creación Automática de Schemas
+## Desarrollo Proactivo (Backend + Frontend)
 
-**REGLA CRÍTICA - Detección y Creación Proactiva**:
+**REGLA CRÍTICA - Crear Stack Completo Automáticamente**:
 
-Cuando el usuario mencione entidades del negocio en su prompt (ej: "usuarios", "productos", "órdenes", "clientes"), **INMEDIATAMENTE crear** los archivos de schema correspondientes en `src/server/db/schema/` SIN esperar confirmación.
+Cuando el usuario mencione entidades o funcionalidades, **INMEDIATAMENTE crear stack completo** (schemas, routers, páginas, componentes) SIN esperar confirmación.
 
 ### Proceso Automático
 
-1. **Identificar entidades** del prompt del usuario (sustantivos clave del dominio)
-2. **Crear archivo de schema** en `src/server/db/schema/{entidad}.ts`
-3. **Incluir campos obligatorios** + campos del negocio inferidos del contexto
-4. **Exportar desde** `src/server/db/schema/index.ts`
-5. **Generar migración** y **Aplicar migración** con `npm run dev` que ejecuta automáticamente `db:generate` y `db:push` antes de iniciar el servidor
+1. **Identificar entidades** del prompt (sustantivos clave del dominio)
+2. **Crear schemas DB** en `src/server/db/schema/{entidad}.ts` con campos obligatorios + campos inferidos
+3. **Crear routers tRPC** en `src/server/api/routers/{entidad}.ts` con CRUD completo
+4. **Crear páginas** en `src/app/{entidad}/page.tsx` con tabla + formulario
+5. **Actualizar** `src/server/api/root.ts` y `src/server/db/schema/index.ts`
+6. **Ejecutar migraciones** automáticamente con `npm run dev`
+7. **Informar brevemente** qué se creó
+
+**NO hacer**: Preguntar confirmación antes de crear código
 
 ### Ejemplo: Usuario dice "necesito gestionar productos y categorías"
 
-**Acción inmediata**: Crear ambos schemas automáticamente:
+**Acción inmediata** (crear automáticamente):
+
+#### 1. Schemas DB (con relaciones y campos obligatorios)
 
 **src/server/db/schema/productos.ts**:
 ```typescript
@@ -234,6 +240,209 @@ export const categoriasRelations = relations(categorias, ({ many }) => ({
 ```typescript
 export * from './productos';
 export * from './categorias';
+```
+
+#### 2. Routers tRPC (CRUD completo con transacciones)
+
+**src/server/api/routers/productos.ts**:
+```typescript
+import { z } from 'zod';
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
+import { productos } from '~/server/db/schema';
+import { eq } from 'drizzle-orm';
+import { withUpdatedAt } from '~/server/db/helpers';
+
+export const productosRouter = createTRPCRouter({
+  list: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.productos.findMany({
+      where: eq(productos.activo, true),
+      with: { categoria: true },
+    });
+  }),
+
+  create: publicProcedure
+    .input(z.object({
+      nombre: z.string().min(2),
+      precio: z.string(),
+      stock: z.number(),
+      categoriaId: z.string().uuid(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const categoria = await ctx.db.query.categorias.findFirst({
+        where: eq(categorias.idPublico, input.categoriaId),
+      });
+      
+      const [producto] = await ctx.db.insert(productos)
+        .values({ ...input, categoriaId: categoria!.id })
+        .returning();
+      
+      return { id: producto.idPublico };
+    }),
+
+  delete: publicProcedure
+    .input(z.string().uuid())
+    .mutation(async ({ ctx, input }) => {
+      const producto = await ctx.db.query.productos.findFirst({
+        where: eq(productos.idPublico, input),
+      });
+      
+      await ctx.db.update(productos)
+        .set(withUpdatedAt({ activo: false }))
+        .where(eq(productos.id, producto!.id));
+    }),
+});
+```
+
+#### 3. Páginas con tabla + formulario + validación
+
+**src/app/productos/page.tsx**:
+```typescript
+'use client';
+import { useState } from 'react';
+import { api } from '~/app/_trpc/client';
+import { Button, Input, Card, Table, Modal } from '~/ui/components';
+import { z } from 'zod';
+
+const productoSchema = z.object({
+  nombre: z.string().min(2, 'Mínimo 2 caracteres'),
+  precio: z.string(),
+  stock: z.number(),
+  categoriaId: z.string().uuid('Selecciona una categoría'),
+});
+
+export default function ProductosPage() {
+  const [showModal, setShowModal] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const { data: productos, isLoading } = api.productos.list.useQuery();
+  const { data: categorias } = api.categorias.list.useQuery();
+  
+  const createMutation = api.productos.create.useMutation({
+    onSuccess: () => {
+      api.useContext().productos.list.invalidate();
+      setShowModal(false);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      nombre: formData.get('nombre'),
+      precio: formData.get('precio'),
+      stock: Number(formData.get('stock')),
+      categoriaId: formData.get('categoriaId'),
+    };
+    
+    const result = productoSchema.safeParse(data);
+    if (!result.success) {
+      const newErrors: Record<string, string> = {};
+      result.error.issues.forEach(issue => {
+        newErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
+    createMutation.mutate(result.data);
+  };
+
+  return (
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold uppercase tracking-wide text-lycsa-accent">
+          Gestión de Productos
+        </h1>
+        <Button onClick={() => setShowModal(true)}>Nuevo Producto</Button>
+      </div>
+
+      <Card>
+        <Table
+          columns={[
+            { header: 'Nombre', accessor: 'nombre' },
+            { header: 'Precio', accessor: 'precio' },
+            { header: 'Stock', accessor: 'stock' },
+            { header: 'Categoría', accessor: 'categoria.nombre' },
+          ]}
+          data={productos || []}
+          isLoading={isLoading}
+        />
+      </Card>
+
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Nuevo Producto">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input name="nombre" label="Nombre" required error={errors.nombre} />
+          <Input name="precio" label="Precio" type="number" step="0.01" required error={errors.precio} />
+          <Input name="stock" label="Stock" type="number" required error={errors.stock} />
+          <select name="categoriaId" className="w-full rounded-md border px-3 py-2" required>
+            <option value="">Seleccionar categoría</option>
+            {categorias?.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+            ))}
+          </select>
+          {errors.categoriaId && <p className="text-sm text-red-500">{errors.categoriaId}</p>}
+          <Button type="submit">Guardar</Button>
+        </form>
+      </Modal>
+    </div>
+  );
+}
+```
+
+#### 4. Actualizar Home (/) según contexto
+
+La página Home (`src/app/page.tsx`) NO es inmutable. Adaptarla al proyecto:
+
+```typescript
+// src/app/page.tsx - Ejemplo Dashboard
+'use client';
+import { Button } from '~/ui/components';
+import Link from 'next/link';
+
+export default function HomePage() {
+  return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold uppercase tracking-wide text-lycsa-accent mb-6">
+        Dashboard - Gestión Comercial
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Link href="/productos">
+          <Button className="w-full">Productos</Button>
+        </Link>
+        <Link href="/categorias">
+          <Button className="w-full">Categorías</Button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+```
+
+### Validaciones Automáticas Pre-Creación
+
+Antes de crear archivos, validar automáticamente:
+1. **Archivo existe** → Leer contenido, actualizar o crear versión mejorada
+2. **Nombres español + snake_case** → Convertir automáticamente si vienen en inglés
+3. **Campos obligatorios** → Agregar (id, idPublico, fechas, activo, adicional)
+4. **pgSchema('app')** → NUNCA usar pgTable directamente
+
+### Comunicación al Usuario
+
+Tras completar creación, informar brevemente:
+```
+Stack completo creado para productos y categorías:
+
+Backend:
+- src/server/db/schema/productos.ts
+- src/server/db/schema/categorias.ts  
+- src/server/api/routers/productos.ts
+- src/server/api/routers/categorias.ts
+
+Frontend:
+- src/app/productos/page.tsx
+- src/app/categorias/page.tsx
+- src/app/page.tsx (actualizado)
 ```
 
 ### Validaciones Pre-Creación

@@ -2,6 +2,21 @@
 
 Template fullstack para desarrollo de aplicaciones por dev citizens/embajadores.
 
+## 🤖 Para Embajadores (Desarrollo con IA)
+
+Este template está diseñado para **embajadores** (personas con conocimientos limitados en desarrollo) usando **agentes de IA** (Cursor, Claude, Cline, etc.).
+
+**Instrucciones para tu agente de IA**: Archivo `.cursorrules` en la raíz
+
+Tu asistente está configurado para:
+- ✅ Ejecutar comandos automáticamente (instalaciones, migraciones, servidor)
+- 📋 Planificar tareas paso a paso
+- 🌐 Abrir navegador cuando sea necesario
+- 💡 Explicar en términos simples
+- 🚀 Anticipar problemas
+
+**Simplemente dile qué quieres hacer y tu asistente se encarga del resto.**
+
 ## 📋 Características
 
 - ⚡ **Next.js 15** - App Router + React Server Components
@@ -71,15 +86,27 @@ template-embajadores/
 └── README.md                     # Este archivo
 ```
 
-## 🚀 Setup Local
+## 🚀 Inicio Rápido
 
-### Prerrequisitos
+### 👥 Para Embajadores (Sin experiencia técnica)
+
+Simplemente dile a tu asistente de IA:
+
+```
+"Hola, ayúdame a iniciar este proyecto"
+```
+
+El asistente ejecutará todo automáticamente (instalaciones, base de datos, servidor, navegador).
+
+### 👨‍💻 Para Desarrolladores (Setup manual)
+
+#### Prerrequisitos
 
 - Node.js >= 20.0.0
 - npm >= 10.0.0
 - PostgreSQL 16+ (o usar Docker)
 
-### Instalación
+#### Instalación
 
 ```bash
 # 1. Clonar o copiar el template
@@ -781,6 +808,19 @@ docker compose -f docker-compose.dev.yml up -d db
 - ✅ NO crear tablas en el schema `public`
 - ✅ Siempre usar soft delete (`active = false`)
 - ✅ Usar `.env.local` para desarrollo local (está en .gitignore)
+
+## 📚 Documentación
+
+### Para Todos
+- 📖 [AI_RULES.md](AI_RULES.md) - Reglas técnicas del proyecto
+- 🎨 [Design System](instructions/DESIGN_SYSTEM.md) - Componentes UI
+- 🗄️ [Base de Datos](instructions/database-actions-guide.md) - Schemas y migraciones
+- 🔒 [Seguridad](instructions/SECURITY.md) - Best practices
+
+### Recursos Adicionales
+- 📋 [CHECKLIST.md](CHECKLIST.md) - Checklist de desarrollo
+- 📁 [ESTRUCTURA.md](ESTRUCTURA.md) - Estructura del proyecto
+- 🤝 [CONTRIBUTING.md](CONTRIBUTING.md) - Guía de contribución
 - ✅ Usar `.env` para valores por defecto o CI/CD
 - ✅ Generar migraciones con `db:generate` + `db:migrate` para producción
 - ✅ Siempre incluir los 4 campos obligatorios

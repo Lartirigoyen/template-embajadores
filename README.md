@@ -707,6 +707,7 @@ export default function ProductosPage() {
 - `npm run db:generate` - **Genera archivos de migración** desde tus schemas de Drizzle
 - `npm run db:migrate` - **Aplica las migraciones** generadas a la base de datos
 - `npm run db:push` - **Push directo** de schema a DB (sin generar archivos de migración, útil para desarrollo rápido)
+- `npm run db:seed` - **Ejecuta el seed** para poblar la base de datos con datos iniciales
 - `npm run db:studio` - Abre Drizzle Studio para visualizar la base de datos
 
 ### Calidad de Código
@@ -740,6 +741,21 @@ npm run db:push
 ```
 
 ## 🔍 Troubleshooting
+
+### 🔴 Problemas de Conexión a Base de Datos (seed/migraciones)
+
+**Si tienes problemas conectándote a la base de datos durante el seed o migraciones**, consulta la guía completa: **[TROUBLESHOOTING_DB.md](TROUBLESHOOTING_DB.md)**
+
+El template ahora incluye:
+- ✅ **Reintentos automáticos** (espera hasta 20 segundos para que la BD esté lista)
+- ✅ **Mensajes de error detallados** con pasos específicos
+- ✅ **Validación de credenciales** antes de conectar
+- ✅ **Script de seed robusto** con manejo de errores
+
+**Comando para seed:**
+```bash
+npm run db:seed
+```
 
 ### Variables de entorno no se cargan
 

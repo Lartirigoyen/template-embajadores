@@ -6,7 +6,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Base de datos principal
-  DATABASE_URL: z.string().url().optional().default('postgresql://postgres:postgres@localhost:5432/lycsa_app'),
+  DATABASE_URL: z.string().url().optional(),
 
   // Base de datos secundaria (opcional)
   DATABASE_SECONDARY_URL: z.string().url().optional(),

@@ -71,7 +71,7 @@ export const Avatar = ({
       </div>
       {!onlyInitials && (
         <div className="flex flex-col gap-1">
-          <Typography variant="h7" as="span" align={`${positionName === 'left' ? 'left' : 'right'}`}>{name}</Typography>
+          <Typography variant="h7" as="span" align={`${positionName === 'left' ? 'right' : 'left'}`}>{name}</Typography>
           {description && (
             <Typography variant="micro" as="span" align={`${positionName === 'left' ? 'right' : 'left'}`}>{description}</Typography>
           )}

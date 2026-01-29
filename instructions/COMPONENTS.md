@@ -72,8 +72,6 @@ Ejemplo de uso en un input:
 </div>
 ```
 
-```
-
 ---
 
 ## 🎨 Componentes de UI
@@ -104,6 +102,10 @@ const [showAlert, setShowAlert] = useState(true);
 - `message`: string - Título del alert
 - `detail`: string - Descripción del alert
 - `onClose`: () => void - Función para cerrar el alert (opcional)
+- `classNameContainer`: string - Clases adicionales para el contenedor
+- `classNameIcon`: string - Clases adicionales para el ícono
+- `classNameMessage`: string - Clases adicionales para el mensaje
+- `classNameDetail`: string - Clases adicionales para el detalle
 
 ---
 
@@ -139,9 +141,10 @@ Etiquetas pequeñas para mostrar estados o categorías.
 ```
 
 **Props:**
-- `variant`: 'success' | 'warning' | 'error' | 'info' | 'default'
-- `size`: 'sm' | 'md' | 'lg'
-- `outlined`: boolean - Estilo con borde en lugar de fondo
+- `children`: React.ReactNode (requerido)
+- `variant`: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+- `size`: 'xs' | 'sm' | 'md' | 'lg'
+- `className`: string - Clases adicionales
 
 ---
 
@@ -218,45 +221,73 @@ Botones con múltiples variantes y colores.
 **Props:**
 - `variant`: 'contained' | 'outline' | 'text'
 - `color`: 'primary' | 'secondary' | 'gray' | 'success' | 'warning' | 'info' | 'error'
-- `size`: 'sm' | 'md' | 'lg'
+- `size`: 'xs' | 'sm' | 'md' | 'lg'
 - `label`: string
 - `icon`: React.ReactNode
 - `iconPosition`: 'left' | 'right'
 - `loading`: boolean
 - `fullWidth`: boolean
-- `onClick`: () => void
+- `disabled`: boolean
+- `className`: string
+- `classNameLabel`: string - Clases adicionales para el label
+- Extiende `React.ButtonHTMLAttributes<HTMLButtonElement>`
 
 ---
 
 ### Card
 
-Contenedor con estilos para agrupar contenido.
+Contenedor con estilos para agrupar contenido, con soporte para título, subtítulo y footer.
 
 ```tsx
+// Card simple
 <Card>
-  <h3>Título del Card</h3>
   <p>Contenido del card...</p>
+</Card>
+
+// Card con título y subtítulo
+<Card title="Título del Card" subtitle="Descripción opcional">
+  <p>Contenido del card...</p>
+</Card>
+
+// Card con footer
+<Card title="Usuarios" footer={<Button label="Ver más" />}>
+  <Table data={data} columns={columns} />
 </Card>
 ```
 
 **Props:**
 - `children`: React.ReactNode (requerido)
-- `className`: string
+- `title`: string - Título del card
+- `subtitle`: string - Subtítulo del card
+- `footer`: React.ReactNode - Contenido del footer
+- `classNameContainer`: string - Clases adicionales para el contenedor
+- `classNameHeader`: string - Clases adicionales para el header
+- `classNameTitle`: string - Clases adicionales para el título
+- `classNameSubtitle`: string - Clases adicionales para el subtítulo
+- `classNameFooter`: string - Clases adicionales para el footer
 
 ---
 
 ### Loader
 
-Indicador de carga animado.
+Indicador de carga animado con soporte para texto y modo pantalla completa.
 
 ```tsx
+// Loader simple
 <Loader size="md" />
-<Loader size="lg" color="primary" />
+
+// Loader con texto
+<Loader size="lg" color="primary" text="Cargando datos..." />
+
+// Loader pantalla completa
+<Loader size="xl" fullScreen text="Procesando..." />
 ```
 
 **Props:**
-- `size`: 'sm' | 'md' | 'lg'
-- `color`: 'primary' | 'secondary' | 'gray'
+- `size`: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+- `color`: 'primary' | 'secondary' | 'accent'
+- `text`: string - Texto a mostrar debajo del loader
+- `fullScreen`: boolean - Muestra el loader en pantalla completa con overlay
 
 ---
 
@@ -309,42 +340,66 @@ const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 Modal/Dialog centrado con overlay.
 
 ```tsx
-const [open, setOpen] = useState(false);
+const [isOpen, setIsOpen] = useState(false);
 
-<Button onClick={() => setOpen(true)}>Abrir Modal</Button>
+<Button label="Abrir Modal" onClick={() => setIsOpen(true)} />
 
 <Modal
-  open={open}
-  onClose={() => setOpen(false)}
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
   title="Título del Modal"
+  size="md"
 >
   <p>Contenido del modal...</p>
+</Modal>
+
+// Modal con footer
+<Modal
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  title="Confirmar acción"
+  footer={<Button label="Confirmar" onClick={handleConfirm} />}
+>
+  <p>¿Estás seguro?</p>
 </Modal>
 ```
 
 **Props:**
-- `open`: boolean (requerido)
+- `isOpen`: boolean (requerido)
 - `onClose`: () => void (requerido)
 - `title`: string
 - `children`: React.ReactNode
+- `footer`: React.ReactNode - Contenido del footer
+- `size`: 'sm' | 'md' | 'lg' | 'xl' (default: 'md')
+- `closeOnOverlayClick`: boolean - Cerrar al hacer clic en el overlay (default: true)
+- `closeOnEsc`: boolean - Cerrar al presionar Escape (default: true)
 
 ---
 
 ### Navbar
 
-Barra de navegación superior fija.
+Barra de navegación superior con posición configurable.
 
 ```tsx
 <Navbar>
   <div className="flex-1">
-    <h1>Mi App</h1>
+    <Typography variant="h5">Mi App</Typography>
   </div>
-  <Button label="Logout" />
+  <Button label="Logout" variant="text" />
+</Navbar>
+
+// Navbar fijo con altura personalizada
+<Navbar position="fixed" height={80} shadow={false}>
+  <Typography variant="h4">Dashboard</Typography>
 </Navbar>
 ```
 
 **Props:**
-- `children`: React.ReactNode (requerido)
+- `children`: React.ReactNode
+- `position`: 'fixed' | 'static' | 'relative' | 'absolute' | 'sticky' (default: 'sticky')
+- `shadow`: boolean - Mostrar sombra (default: true)
+- `height`: number - Altura en píxeles (default: 64)
+- `className`: string - Clases adicionales
 
 ---
 
@@ -356,16 +411,28 @@ Paginación con números de página.
 const [page, setPage] = useState(1);
 
 <Pagination
-  currentPage={page}
+  page={page}
   totalPages={10}
   onPageChange={setPage}
+/>
+
+// Con botones de ir al inicio/final
+<Pagination
+  page={page}
+  totalPages={50}
+  onPageChange={setPage}
+  showFirstLast
+  maxVisible={7}
 />
 ```
 
 **Props:**
-- `currentPage`: number (requerido)
+- `page`: number (requerido) - Página actual
 - `totalPages`: number (requerido)
 - `onPageChange`: (page: number) => void (requerido)
+- `showFirstLast`: boolean - Mostrar botones de ir al inicio/final (default: false)
+- `size`: 'sm' | 'md' | 'lg' (default: 'md')
+- `maxVisible`: number - Cantidad máxima de páginas visibles (default: 5)
 
 ---
 
@@ -432,12 +499,16 @@ Placeholders animados para carga.
 <Skeleton variant="circular" width={40} height={40} />
 <Skeleton variant="rectangular" width={200} height={100} />
 <Skeleton variant="rounded" width={300} height={60} />
+
+// Sin animación
+<Skeleton variant="text" animation="none" />
 ```
 
 **Props:**
 - `variant`: 'text' | 'circular' | 'rectangular' | 'rounded'
-- `width`: number
-- `height`: number
+- `width`: string | number
+- `height`: string | number
+- `animation`: 'pulse' | 'wave' | 'none' (default: 'pulse')
 
 ---
 
@@ -493,6 +564,7 @@ const steps = [
 - `alternativeLabel`: boolean - Labels centrados debajo de cada paso
 - `vertical`: boolean - Orientación vertical
 - `onStepClick`: (stepIndex: number) => void - Callback al hacer clic en un paso
+- `size`: 'sm' | 'md' | 'lg' (default: 'md')
 
 **Step:**
 ```tsx
@@ -621,23 +693,63 @@ Componente de paginación para usar con Table u otras listas.
 
 ### Tabs
 
-Pestañas para alternar entre contenidos.
+Pestañas para alternar entre contenidos con soporte para iconos, badges y orientación vertical.
 
 ```tsx
-const [activeTab, setActiveTab] = useState(0);
-
-const tabs = [
-  { label: 'Tab 1', content: <div>Contenido 1</div> },
-  { label: 'Tab 2', content: <div>Contenido 2</div> },
+const items = [
+  { key: 'tab1', label: 'Tab 1', content: <div>Contenido 1</div> },
+  { key: 'tab2', label: 'Tab 2', content: <div>Contenido 2</div>, badge: 5 },
+  { key: 'tab3', label: 'Tab 3', content: <div>Contenido 3</div>, disabled: true },
 ];
 
-<Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+// Tabs no controladas
+<Tabs items={items} defaultActiveKey="tab1" />
+
+// Tabs controladas
+const [activeKey, setActiveKey] = useState('tab1');
+<Tabs 
+  items={items} 
+  activeKey={activeKey} 
+  onChange={setActiveKey}
+  variant="enclosed"
+/>
+
+// Tabs verticales con iconos
+<Tabs 
+  items={[
+    { key: 'home', label: 'Inicio', icon: <IconHome />, content: <HomePage /> },
+    { key: 'settings', label: 'Config', icon: <IconSettings />, content: <SettingsPage /> },
+  ]}
+  vertical
+  iconPosition="left"
+/>
 ```
 
 **Props:**
-- `tabs`: Tab[] (requerido)
-- `activeTab`: number (requerido)
-- `onTabChange`: (index: number) => void (requerido)
+- `items`: TabItem[] (requerido)
+- `defaultActiveKey`: string - Key inicial (no controlado)
+- `activeKey`: string - Key activo (controlado)
+- `onChange`: (key: string) => void - Callback al cambiar tab
+- `variant`: 'line' | 'enclosed' (default: 'line')
+- `size`: 'sm' | 'md' | 'lg' (default: 'md')
+- `fullWidth`: boolean - Tabs ocupan todo el ancho
+- `centered`: boolean - Tabs centrados
+- `vertical`: boolean - Orientación vertical
+- `iconPosition`: 'left' | 'right' | 'top' | 'bottom' (default: 'left')
+- `tabsClassName`: string - Clases para la barra de tabs
+- `contentClassName`: string - Clases para el contenido
+
+**TabItem:**
+```tsx
+interface TabItem {
+  key: string; // REQUERIDO: Identificador único
+  label?: string;
+  icon?: React.ReactNode;
+  content: React.ReactNode; // REQUERIDO: Contenido del tab
+  disabled?: boolean;
+  badge?: string | number; // Badge opcional
+}
+```
 
 ---
 
@@ -713,18 +825,22 @@ Componente de tipografía con variantes predefinidas.
 <Typography variant="paragraph">Texto normal</Typography>
 <Typography variant="paragraph-lg">Texto grande</Typography>
 <Typography variant="paragraph-sm">Texto pequeño</Typography>
-<Typography variant="lead">Texto introductorio</Typography>
-<Typography variant="muted">Texto secundario</Typography>
+<Typography variant="caption">Texto secundario</Typography>
+<Typography variant="micro">Texto muy pequeño</Typography>
 
 // Cambiar el elemento HTML
 <Typography variant="h2" as="h1">Se ve como h2 pero es h1</Typography>
+
+// Con alineación
+<Typography variant="paragraph" align="center">Texto centrado</Typography>
+<Typography variant="paragraph" align="right">Texto a la derecha</Typography>
 ```
 
 **Props:**
 - `variant`: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'label' | 'paragraph' | 'paragraph-lg' | 'paragraph-sm' | 'caption' | 'micro'
 - `as`: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div' | 'label' - Elemento HTML a renderizar
 - `color`: 'primary' | 'secondary' | 'accent' | 'white' | 'error' | 'success' | 'warning' | 'info' | 'gray' | 'helper' - Color del texto
-- 'align`: 'left' | 'right' | 'center' - Alineación del texto
+- `align`: 'left' | 'right' | 'center' - Alineación del texto
 - `className`: string - Clases adicionales de Tailwind
 
 ---
@@ -758,18 +874,19 @@ Input de texto con label, iconos y estados de error.
 
 **Props:**
 - `label`: string
+- `labelPosition`: 'top' | 'left' (default: 'top')
 - `type`: string
-- `value`: string
-- `onChange`: (e) => void
+- `id`: string - Usado también como name
 - `placeholder`: string
 - `icon`: React.ReactNode
-- `iconPosition`: 'left' | 'right'
+- `iconPosition`: 'left' | 'right' (default: 'left')
 - `error`: string
 - `helperText`: string
 - `required`: boolean
 - `disabled`: boolean
 - `fullWidth`: boolean
 - `touched`: boolean - Indica si el campo fue tocado (para mostrar errores)
+- Extiende `React.InputHTMLAttributes<HTMLInputElement>`
 
 ---
 
@@ -842,10 +959,11 @@ Select con búsqueda y soporte para selección múltiple.
 **Props:**
 - `id`: string
 - `label`: string
+- `labelPosition`: 'top' | 'left' (default: 'top')
 - `options`: SelectOption[] (requerido)
 - `value`: string | string[]
 - `onChange`: (value: string | string[]) => void
-- `placeholder`: string
+- `placeholder`: string (default: 'Seleccionar...')
 - `multiple`: boolean
 - `disabled`: boolean
 - `required`: boolean
@@ -860,27 +978,6 @@ interface SelectOption {
   value: string;
 }
 ```
-
----
-
-### Autocomplete
-
-Select con autocompletado y búsqueda.
-
-```tsx
-<Autocomplete
-  label="Ciudad"
-  options={[
-    { label: 'Buenos Aires', value: 'bsas' },
-    { label: 'Córdoba', value: 'cba' },
-  ]}
-  value={city}
-  onChange={setCity}
-  placeholder="Buscar ciudad..."
-/>
-```
-
-**Props:** Similares a Select pero sin soporte para múltiple.
 
 ---
 
@@ -959,11 +1056,15 @@ Switch/Toggle para valores booleanos.
 ```
 
 **Props:**
-- `checked`: boolean (requerido)
-- `onChange`: (checked: boolean) => void (requerido)
+- `checked`: boolean (default: false)
+- `onChange`: (checked: boolean) => void
 - `label`: string
+- `labelPosition`: 'left' | 'right' (default: 'right')
+- `required`: boolean
 - `disabled`: boolean
 - `size`: 'sm' | 'md' | 'lg' | 'xl' (default: 'md')
+- `error`: string
+- `helperText`: string
 
 ---
 
@@ -1017,6 +1118,7 @@ Grupo de radio buttons.
 
 **Props:**
 - `label`: string
+- `labelPosition`: 'top' | 'left' (default: 'top')
 - `options`: RadioOption[] (requerido)
 - `value`: string
 - `onChange`: (value: string) => void (requerido)
@@ -1064,8 +1166,8 @@ interface RadioOption {
 
 **Props:**
 - `label`: string
-- `value`: string
-- `onChange`: (e) => void
+- `labelPosition`: 'top' | 'left' (default: 'top')
+- `id`: string - Usado también como name
 - `placeholder`: string
 - `rows`: number
 - `error`: string
@@ -1074,6 +1176,7 @@ interface RadioOption {
 - `disabled`: boolean
 - `fullWidth`: boolean
 - `touched`: boolean - Indica si el campo fue tocado (para mostrar errores)
+- Extiende `React.TextareaHTMLAttributes<HTMLTextAreaElement>`
 
 ---
 

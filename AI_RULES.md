@@ -1,6 +1,6 @@
 # AI Development Rules - Template Embajadores Lycsa Suite
 
-Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructions/database-actions-guide.md` y `instructions/DESIGN_SYSTEM.md`.
+Reglas de desarrollo optimizadas para agentes de IA. Más detalles en `instructions/database-actions-guide.md`, `instructions/DESIGN_SYSTEM.md` y `instructions/COMPONENTS.md`.
 
 ## Stack Tecnológico
 
@@ -300,7 +300,8 @@ export const productosRouter = createTRPCRouter({
 'use client';
 import { useState } from 'react';
 import { api } from '~/app/_trpc/client';
-import { Button, Input, Card, Table, Modal } from '~/ui/components';
+import { Button, Card, Modal, Table, Typography } from '~/ui/components';
+import { Input, Select } from '~/ui/components/forms';
 import { z } from 'zod';
 
 const productoSchema = z.object({
@@ -360,29 +361,28 @@ export default function ProductosPage() {
       <Card>
         <Table
           columns={[
-            { header: 'Nombre', accessor: 'nombre' },
-            { header: 'Precio', accessor: 'precio' },
-            { header: 'Stock', accessor: 'stock' },
-            { header: 'Categoría', accessor: 'categoria.nombre' },
+            { key: 'nombre', header: 'Nombre' },
+            { key: 'precio', header: 'Precio' },
+            { key: 'stock', header: 'Stock' },
+            { key: 'categoria.nombre', header: 'Categoría' },
           ]}
           data={productos || []}
-          isLoading={isLoading}
         />
       </Card>
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Nuevo Producto">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input name="nombre" label="Nombre" required error={errors.nombre} />
-          <Input name="precio" label="Precio" type="number" step="0.01" required error={errors.precio} />
-          <Input name="stock" label="Stock" type="number" required error={errors.stock} />
-          <select name="categoriaId" className="w-full rounded-md border px-3 py-2" required>
-            <option value="">Seleccionar categoría</option>
-            {categorias?.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-            ))}
-          </select>
-          {errors.categoriaId && <p className="text-sm text-red-500">{errors.categoriaId}</p>}
-          <Button type="submit">Guardar</Button>
+          <Input name="nombre" label="Nombre" required error={errors.nombre} touched={!!errors.nombre} />
+          <Input name="precio" label="Precio" type="number" step="0.01" required error={errors.precio} touched={!!errors.precio} />
+          <Input name="stock" label="Stock" type="number" required error={errors.stock} touched={!!errors.stock} />
+          <Select
+            label="Categoría"
+            options={categorias?.map(cat => ({ label: cat.nombre, value: cat.id })) || []}
+            placeholder="Seleccionar categoría"
+            required
+            error={errors.categoriaId}
+          />
+          <Button label="Guardar" type="submit" variant="contained" color="primary" />
         </form>
       </Modal>
     </div>
@@ -397,21 +397,21 @@ La página Home (`src/app/page.tsx`) NO es inmutable. Adaptarla al proyecto:
 ```typescript
 // src/app/page.tsx - Ejemplo Dashboard
 'use client';
-import { Button } from '~/ui/components';
+import { Button, Typography } from '~/ui/components';
 import Link from 'next/link';
 
 export default function HomePage() {
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold uppercase tracking-wide text-lycsa-accent mb-6">
+      <Typography variant="h2" className="mb-6">
         Dashboard - Gestión Comercial
-      </h1>
+      </Typography>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link href="/productos">
-          <Button className="w-full">Productos</Button>
+          <Button label="Productos" variant="contained" color="primary" fullWidth />
         </Link>
         <Link href="/categorias">
-          <Button className="w-full">Categorías</Button>
+          <Button label="Categorías" variant="contained" color="primary" fullWidth />
         </Link>
       </div>
     </div>
@@ -671,65 +671,6 @@ export const env = envSchema.parse(process.env); // Fail-fast al inicio
 
 Usar `env.VARIABLE` en lugar de `process.env.VARIABLE`.
 
-## Componentes UI
-
-### Props TypeScript
-
-```typescript
-interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-}
-
-export function Button({ variant = 'primary', className, ...props }: ButtonProps) {
-  return (
-    <button
-      className={cn(
-        'inline-flex items-center justify-center rounded-md font-bold transition-all',
-        variant === 'primary' && 'bg-lycsa-verde-600 text-white hover:bg-lycsa-verde-900',
-        variant === 'secondary' && 'bg-lycsa-beige hover:bg-lycsa-beige-600',
-        className
-      )}
-      {...props}
-    />
-  );
-}
-```
-
-### ForwardRef para Inputs
-
-```typescript
-import { forwardRef } from 'react';
-
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, required, className, ...props }, ref) => (
-    <div>
-      {label && (
-        <label className="text-sm font-bold">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
-      )}
-      <input 
-        ref={ref} 
-        className={cn(
-          'w-full rounded-md border px-3 py-2', 
-          error && 'border-red-500',
-          className
-        )} 
-        required={required}
-        {...props} 
-      />
-      {error && <p className="text-sm text-red-500">{error}</p>}
-    </div>
-  )
-);
-```
-
 ### Validación de Formularios
 
 **REGLAS OBLIGATORIAS**:
@@ -751,18 +692,22 @@ const formSchema = z.object({
 
 export function UserForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
     
+    // Marcar todos como touched al enviar
+    setTouched({ email: true, nombre: true });
+    
     // Validar antes de enviar
     const result = formSchema.safeParse(data);
     if (!result.success) {
       const newErrors: Record<string, string> = {};
       result.error.issues.forEach(issue => {
-        newErrors[issue.path[0]] = issue.message;
+        newErrors[issue.path[0] as string] = issue.message;
       });
       setErrors(newErrors);
       return; // NO enviar si hay errores
@@ -776,19 +721,21 @@ export function UserForm() {
   return (
     <form onSubmit={handleSubmit}>
       <Input
-        name="email"
+        id="email"
         label="Email"
         type="email"
         required
         error={errors.email}
+        touched={touched.email}
       />
       <Input
-        name="nombre"
+        id="nombre"
         label="Nombre"
         required
         error={errors.nombre}
+        touched={touched.nombre}
       />
-      <Button type="submit">Guardar</Button>
+      <Button label="Guardar" type="submit" variant="contained" color="primary" />
     </form>
   );
 }
@@ -871,7 +818,7 @@ docker-compose -f docker-compose.dev.yml up  # Desarrollo
 
 ## Referencias
 
-**Detalladas**: `instructions/database-actions-guide.md` (1033 líneas BD completa), `instructions/DESIGN_SYSTEM.md` (Design System detallado)
+**Detalladas**: `instructions/database-actions-guide.md` (1033 líneas BD completa), `instructions/DESIGN_SYSTEM.md` (Design System detallado), `instructions/COMPONENTS.md` (Librería de componentes)
 **Docs**: Next.js 15, tRPC v11, Drizzle ORM, Tailwind CSS, Zod
 
 **Última actualización**: Enero 2026 | v2.0.0-optimized

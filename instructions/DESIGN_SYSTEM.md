@@ -37,58 +37,60 @@ Este documento define el sistema de diseño de Lycsa Suite, una guía unificada 
 
 ```css
 /* Primary (Verde institucional) */
---color-primary: #006149       /* Verde institucional principal */
---color-primary-600: #00523e   /* Verde hover/activo (más oscuro) */
---color-primary-50: #e6f2ef    /* Verde muy claro (fondos) */
---color-primary-100: #cce5df   /* Verde claro (fondos) */
+--color-primary-50: #ebfef6;
+--color-primary-100: #cefde7;
+--color-primary-200: #a2f8d3;
+--color-primary-300: #66efbe;
+--color-primary-400: #29dea2;
+--color-primary-500: #05c48b;
+--color-primary-600: #00a072;
+--color-primary-700: #00805e;
+--color-primary-800: #006149; /* Verde institucional principal */
+--color-primary-900: #015340;
+--color-primary-950: #002f25;
 
 /* Secondary (Beige institucional) */
---color-secondary: #d5c9b6     /* Beige principal */
---color-secondary-600: #b5ab9a /* Beige hover/activo (más oscuro) */
---color-secondary-50: #f7f5f1  /* Beige muy claro (fondos) */
---color-secondary-100: #ebe8e0 /* Beige claro (fondos) */
+--color-secondary-50: #f8f6f4;
+--color-secondary-100: #f0ece4;
+--color-secondary-200: #e0d7c8;
+--color-secondary-300: #d5c9b6; /* Beige principal */
+--color-secondary-400: #b69e81;
+--color-secondary-500: #a78868;
+--color-secondary-600: #9a775c;
+--color-secondary-700: #80614e;
+--color-secondary-800: #695143;
+--color-secondary-900: #564338;
+--color-secondary-950: #2d221d;
 
-/* Accent (Gris - textos) */
---color-accent: #595857        /* Gris para textos principales */
+/* Grises */
+--color-accent: #595857;            /* Gris para textos principales */
+--color-gray-light: #f5f5f5;        /* Fondo general */
+--color-gray-medium: #9ca3af;       /* Texto secundario */
+--color-gray-dark: #374151;         /* Texto oscuro */
 ```
 
 ### Colores de Estado
 
 ```css
-/* Success (Verde) */
---color-success: #22c55e
---color-success-light: #86efac
---color-success-bg: #dcfce7
+/* Success */
+--color-success: #31C950;
+--color-success-light: #DCFCE7;
+--color-success-dark: #016630;
 
-/* Warning (Amarillo) */
---color-warning: #eab308
---color-warning-light: #fde047
---color-warning-bg: #fef9c3
+/* Warning */
+--color-warning: #F0B13B;
+--color-warning-light: #FEF9C2;
+--color-warning-dark: #973C08;
 
-/* Error/Danger (Rojo) */
---color-error: #ef4444
---color-error-light: #fca5a5
---color-error-bg: #fee2e2
+/* Error */
+--color-error: #FB2C36;
+--color-error-light: #fee2e2;
+--color-error-dark: #9F0712;
 
-/* Info (Azul claro) */
---color-info: #3b82f6
---color-info-light: #93c5fd
---color-info-bg: #dbeafe
-```
-
-### Colores Neutrales
-
-```css
---color-gray-50: #f9fafb
---color-gray-100: #f3f4f6
---color-gray-200: #e5e7eb
---color-gray-300: #d1d5db
---color-gray-400: #9ca3af
---color-gray-500: #6b7280
---color-gray-600: #4b5563
---color-gray-700: #374151
---color-gray-800: #1f2937
---color-gray-900: #111827
+/* Info */
+--color-info: #2B7FFF;
+--color-info-light: #DBEAFE;
+--color-info-dark: #193CB8;
 ```
 
 ### Uso de Colores
@@ -105,21 +107,29 @@ Este documento define el sistema de diseño de Lycsa Suite, una guía unificada 
 ### Fuente Principal: Aller
 
 **Familia**: Aller  
-**Pesos disponibles**: Regular (400), Bold (700)  
+**Pesos disponibles**: Light (300), Regular (400), Bold (700)  
 **Fallback**: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial
 
 ```css
 @font-face {
-  font-family: "Aller";
-  src: url("./fonts/Aller-Regular.ttf") format("truetype");
-  font-weight: 400;
+  font-family: "Aller Light";
+  src: url("./fonts/Aller_Lt.ttf") format("truetype");
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Aller";
-  src: url("./fonts/Aller-Bold.ttf") format("truetype");
+  src: url("./fonts/Aller_Rg.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Aller Bold";
+  src: url("./fonts/Aller_Bd.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -138,36 +148,6 @@ Textos Pequeños:       12px (0.75rem) - font-normal
 Labels de Formulario:  14px (0.875rem) - font-bold
 Botones:               14px (0.875rem) - font-bold uppercase tracking-wide
 ```
-
-### Clases Tipográficas Reutilizables
-
-```css
-.title-primary {
-  font-family: 'Aller';
-  font-weight: 700;
-  color: var(--color-primary);
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.title-secondary {
-  font-family: 'Aller';
-  font-weight: 700;
-  color: var(--color-accent);
-  font-size: 1.25rem;
-  text-transform: capitalize;
-}
-
-.text-body {
-  font-family: 'Aller';
-  font-weight: 400;
-  color: var(--color-accent);
-  font-size: 1rem;
-}
-```
-
----
 
 ## Espaciado y Dimensiones
 
@@ -265,17 +245,17 @@ Focus: focus:ring-red-500
 
 ```html
 <!-- Botón Primary (Verde institucional) -->
-<button class="inline-flex items-center justify-center px-3 py-2 text-sm h-[42px] bg-primary text-white font-aller-bold uppercase tracking-wide rounded-md shadow-md hover:bg-primary-600 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<button class="inline-flex items-center justify-center px-3 py-2 text-sm h-10.5 bg-primary text-white font-aller-bold uppercase tracking-wide rounded-md shadow-md hover:bg-primary-600 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
   Guardar
 </button>
 
 <!-- Botón Secondary (Beige institucional) -->
-<button class="inline-flex items-center justify-center px-3 py-2 text-sm h-[42px] bg-secondary text-accent font-aller-bold uppercase tracking-wide rounded-md shadow-md hover:bg-secondary-600 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
+<button class="inline-flex items-center justify-center px-3 py-2 text-sm h-10.5 bg-secondary text-accent font-aller-bold uppercase tracking-wide rounded-md shadow-md hover:bg-secondary-600 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
   Exportar
 </button>
 
 <!-- Botón Outline (Verde) -->
-<button class="inline-flex items-center justify-center px-3 py-2 text-sm h-[42px] border-2 border-primary text-primary font-aller-bold uppercase tracking-wide rounded-md hover:bg-primary hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<button class="inline-flex items-center justify-center px-3 py-2 text-sm h-10.5 border-2 border-primary text-primary font-aller-bold uppercase tracking-wide rounded-md hover:bg-primary hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
   Cancelar
 </button>
 ```
@@ -318,7 +298,7 @@ Hint: text-gray-500 text-sm font-aller
     id="email" 
     type="email" 
     placeholder="usuario@ejemplo.com"
-    class="w-full px-3 py-2 h-[42px] border border-gray-300 rounded-md font-aller transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+    class="w-full px-3 py-2 h-10.5 border border-gray-300 rounded-md font-aller transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
   />
   <p class="text-gray-500 text-sm font-aller">Usa tu correo corporativo</p>
 </div>
@@ -332,7 +312,7 @@ Hint: text-gray-500 text-sm font-aller
   <input 
     id="email-error" 
     type="email" 
-    class="w-full px-3 py-2 h-[42px] border border-red-300 rounded-md font-aller focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+    class="w-full px-3 py-2 h-10.5 border border-red-300 rounded-md font-aller focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
   />
   <p class="text-red-500 text-sm font-aller">El correo electrónico es inválido</p>
 </div>
@@ -366,7 +346,7 @@ Sombra grande: shadow-lg
 **Card con Gradiente (KPI)**
 ```html
 <!-- Ejemplo con verde institucional -->
-<div class="bg-gradient-to-r from-green-50 to-green-100 border-green-200 rounded-xl shadow-md p-6">
+<div class="bg-linear-to-r from-green-50 to-green-100 border-green-200 rounded-xl shadow-md p-6">
   <div class="flex items-center">
     <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
       <!-- Icono SVG en blanco -->
@@ -688,7 +668,7 @@ Search input (si aplica): px-4 py-2 border-b border-gray-200
 ```html
 <div class="relative">
   <!-- Trigger -->
-  <button class="w-full px-3 py-2 h-[42px] border border-gray-300 rounded-md font-aller text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+  <button class="w-full px-3 py-2 h-10.5 border border-gray-300 rounded-md font-aller text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
     <span>Seleccionar opción</span>
     <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -936,7 +916,7 @@ xl:  1280px (desktop)
 <h1 class="text-xl md:text-2xl lg:text-3xl font-aller-bold">
 
 <!-- Tamaño de componentes responsive -->
-<button class="h-[32px] sm:h-[42px] lg:h-[52px]">
+<button class="h-8 sm:h-10.5 lg:h-13">
 ```
 
 #### Ocultar/Mostrar por Breakpoint
@@ -968,15 +948,15 @@ xl:  1280px (desktop)
 /* 2) Definir fuentes */
 @font-face {
   font-family: "Aller";
-  src: url("./fonts/Aller-Regular.ttf") format("truetype");
+  src: url("./fonts/Aller_Rg.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Aller";
-  src: url("./fonts/Aller-Bold.ttf") format("truetype");
+  font-family: "Aller Bold";
+  src: url("./fonts/Aller_Bd.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -1043,50 +1023,6 @@ xl:  1280px (desktop)
 }
 ```
 
-### Clases Utility Personalizadas
-
-```css
-/* En @layer utilities */
-@layer utilities {
-  .font-aller {
-    font-family: var(--font-aller);
-  }
-
-  .font-aller-bold {
-    font-family: var(--font-aller);
-    font-weight: 700;
-  }
-
-  .text-primary {
-    color: #006149; /* Verde institucional */
-  }
-
-  .bg-primary {
-    background-color: #006149;
-  }
-
-  .bg-primary-600 {
-    background-color: #00523e;
-  }
-
-  .text-secondary {
-    color: #d5c9b6; /* Beige institucional */
-  }
-
-  .bg-secondary {
-    background-color: #d5c9b6;
-  }
-
-  .bg-secondary-600 {
-    background-color: #b5ab9a;
-  }
-
-  .text-accent {
-    color: #595857; /* Gris para textos */
-  }
-}
-```
-
 ---
 
 ## Checklist de Implementación
@@ -1132,11 +1068,12 @@ Cuando implementes este sistema de diseño en un nuevo proyecto, verifica:
 ## Recursos Adicionales
 
 ### Fuentes
-- **Aller Regular (400)**: Para textos de cuerpo, labels, descripciones
+- **Aller Light (300)**: Para descripciones
+- **Aller Regular (400)**: Para textos de cuerpo, labels
 - **Aller Bold (700)**: Para títulos, botones, navegación, labels importantes
 
 ### Iconografía
-- **Heroicons**: https://heroicons.com/ (usado en los ejemplos)
+- **Tabler Icons**: https://tabler.io/icons (usado en los ejemplos)
 - **Peso**: stroke-width="2" (consistente en todos los iconos)
 - **Tamaños comunes**: w-4 h-4 (16px), w-5 h-5 (20px), w-6 h-6 (24px)
 

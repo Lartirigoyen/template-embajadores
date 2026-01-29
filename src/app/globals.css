@@ -1,20 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Tipografía Aller - Lycsa Suite */
-/* 
-  Nota: Las fuentes Aller deben estar en la carpeta public/fonts/
-  Si no están disponibles, se usará system-ui como fallback
-*/
-@font-face {
-  font-family: 'Aller';
-  src: url('/fonts/Aller_Rg.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* -------------------- FUENTE PRINCIPAL -------------------- */
 @font-face {
   font-family: 'Aller Light';
   src: url('/fonts/Aller_Lt.ttf') format('truetype');
@@ -24,30 +10,86 @@
 }
 
 @font-face {
-  font-family: 'Aller Bold';
-  src: url('/fonts/Aller_Bd.ttf') format('truetype');
+  font-family: "Aller";
+  src: url("/fonts/Aller_Rg.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Aller Bold";
+  src: url("/fonts/Aller_Bd.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-@layer base {
-  html {
-    font-family: 'Aller', system-ui, sans-serif;
-  }
+@theme {
+  /* Primary - Verde institucional LYCSA */
+  --color-primary-50: #ebfef6;
+  --color-primary-100: #cefde7;
+  --color-primary-200: #a2f8d3;
+  --color-primary-300: #66efbe;
+  --color-primary-400: #29dea2;
+  --color-primary-500: #05c48b;
+  --color-primary-600: #00a072;
+  --color-primary-700: #00805e;
+  --color-primary-800: #006149; /* Verde institucional principal */
+  --color-primary-900: #015340;
+  --color-primary-950: #002f25;
 
-  body {
-    @apply bg-gray-50 text-gray-900;
-  }
+  /* Secondary - Beige institucional LYCSA */
+  --color-secondary-50: #f8f6f4;
+  --color-secondary-100: #f0ece4;
+  --color-secondary-200: #e0d7c8;
+  --color-secondary-300: #d5c9b6; /* Beige principal */
+  --color-secondary-400: #b69e81;
+  --color-secondary-500: #a78868;
+  --color-secondary-600: #9a775c;
+  --color-secondary-700: #80614e;
+  --color-secondary-800: #695143;
+  --color-secondary-900: #564338;
+  --color-secondary-950: #2d221d;
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-aller-bold;
-  }
+  /* Grises */
+  --color-accent: #595857;            /* Gris para textos principales */
+  --color-gray-light: #f5f5f5;        /* Fondo general */
+  --color-gray-medium: #9ca3af;       /* Texto secundario */
+  --color-gray-dark: #374151;         /* Texto oscuro */
+
+  /* ---------- ESTADOS ---------- */
+  /* Success */
+  --color-success: #31C950;
+  --color-success-light: #DCFCE7;
+  --color-success-dark: #016630;
+  
+  /* Warning */
+  --color-warning: #F0B13B;
+  --color-warning-light: #FEF9C2;
+  --color-warning-dark: #973C08;
+  
+  /* Error */
+  --color-error: #FB2C36;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #9F0712;
+  
+  /* Info */
+  --color-info: #2B7FFF;
+  --color-info-light: #DBEAFE;
+  --color-info-dark: #193CB8;
+
+  /* ---------- FUENTES ---------- */
+  --font-aller: "Aller", system-ui, sans-serif;
+  --font-aller-bold: "Aller Bold", system-ui, sans-serif;
+  --font-aller-light: "Aller Light", system-ui, sans-serif;
+  --font-sans: var(--font-aller);
+
+  --shadow-lycsa: 0 8px 32px rgba(0, 97, 73, 0.12);
+  --shadow-lycsa-header: 0 6px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lycsa-card: 0 4px 16px rgba(0, 97, 73, 0.08);
+
+  --radius-lycsa: 8px;
 }
 
 @layer utilities {
@@ -65,4 +107,52 @@
       opacity: 1;
     }
   }
+}
+
+/* -------------------- CLASES COMUNES PARA FORMULARIOS -------------------- */
+
+/* Contenedor base para inputs */
+.form-field-container {
+  @apply flex-1 flex flex-col gap-2;
+}
+
+/* Tipografía común para inputs */
+.form-input-typography {
+  @apply font-aller text-base text-accent;
+}
+
+/* Input base común para text, textarea, select */
+.form-input-base {
+  @apply w-full py-2 rounded-lycsa border 
+    transition-colors duration-200 placeholder:text-gray-medium 
+    focus:outline-none focus:ring-2 focus:ring-primary-800 focus:border-transparent 
+    disabled:bg-gray-light disabled:text-gray-medium disabled:cursor-not-allowed;
+}
+
+/* Estado de error */
+.border-input-error {
+  @apply border-error;
+}
+
+/* Estado normal */
+.border-input-normal {
+  @apply border-gray-medium;
+}
+
+/* Label con error */
+.form-label-error {
+  @apply text-error;
+}
+
+/* Variantes de caja para checkbox y radio */
+.form-box-plain {
+  @apply p-0;
+}
+
+.form-box-boxed {
+  @apply p-4 border border-gray-medium bg-gray-light rounded-lycsa;
+}
+
+.form-box-error {
+  @apply p-4 border border-error rounded-lycsa;
 }

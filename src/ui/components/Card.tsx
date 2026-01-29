@@ -1,45 +1,47 @@
 'use client';
 
-import React from 'react';
+import Typography from "./Typography";
 
 export interface CardProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
   footer?: React.ReactNode;
-  className?: string;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  classNameContainer?: string;
+  classNameHeader?: string;
+  classNameTitle?: string;
+  classNameSubtitle?: string;
+  classNameFooter?: string;
 }
 
-export const Card: React.FC<CardProps> = ({
+export const Card = ({
   children,
   title,
   subtitle,
   footer,
-  className = '',
-  padding = 'md',
-}) => {
-  const paddingClasses = {
-    none: '',
-    sm: 'p-3',
-    md: 'p-4',
-    lg: 'p-6',
-  };
-
+  classNameContainer = '',
+  classNameHeader = '',
+  classNameTitle = '',
+  classNameSubtitle = '',
+  classNameFooter = ''
+}: CardProps) => {
   return (
-    <div className={`bg-white rounded-lycsa shadow-lycsa border border-gray-200 ${className}`}>
+    <div
+      className={`h-max flex flex-col gap-4 p-4 bg-white rounded-lycsa shadow-lycsa max-w-full ${classNameContainer}`}
+      style={{ position: 'relative' }}
+    >
       {(title || subtitle) && (
-        <div className={`border-b border-gray-200 ${paddingClasses[padding]}`}>
-          {title && <h3 className="text-xl font-aller-bold text-gray-900">{title}</h3>}
-          {subtitle && <p className="mt-1 text-sm font-aller-light text-gray-600">{subtitle}</p>}
+        <div className={`flex flex-col items-start text-left gap-2 pb-2 border-b border-gray-medium ${classNameHeader}`}>        
+          {title && <Typography variant="h4" as="h4" className={classNameTitle}>{title}</Typography>}
+          {subtitle && <Typography variant="paragraph" as="p" className={classNameSubtitle}>{subtitle}</Typography>}
         </div>
       )}
-      <div className={paddingClasses[padding]}>{children}</div>
+      <div className="w-full">{children}</div>
       {footer && (
-        <div className={`border-t border-gray-200 ${paddingClasses[padding]} bg-gray-50`}>
-          {footer}
-        </div>
+        <div className={`border-t border-gray-200 ${classNameFooter}`}>{footer}</div>
       )}
     </div>
   );
-};
+}
+
+export default Card;

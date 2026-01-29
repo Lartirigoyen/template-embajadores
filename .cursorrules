@@ -162,23 +162,43 @@ createdAt, fullName, email
 
 ### Componentes UI
 
-**SIEMPRE usar componentes del Design System** (`src/ui/components/`):
-- Button
-- Input
-- Card
-- Modal
-- Table
+**SIEMPRE usar componentes del Design System** (`src/ui/components/` y `src/ui/components/forms`):
+- Alert
+- Avatar
 - Badge
+- Breadcrumb
+- Button
+- Card
+- Checkbox
+- FileDropzone
+- Input
+- Link
 - Loader
+- Menu
+- MenuItem
+- Modal
+- Nabvar
+- NumberInput
+- Pagination
+- RadioGroup
+- Select
+- Sidebar
+- SidebarNode
+- Skeleton
+- Stepper
+- Switch
+- Table
+- TablePagination
+- Tabs
+- TextArea
 - Toast
+- Typography
 
 **Ejemplo de uso correcto**:
 ```typescript
 import { Button, Input, Card } from '@/ui/components';
 
-<Button variant="primary" size="md" onClick={handleClick}>
-  Guardar
-</Button>
+<Button label="Guardar" variant="contained" color="primary" size="md" onClick={handleClick} />
 
 <Input 
   label="Nombre"
@@ -339,6 +359,7 @@ El embajador debe sentir que tiene un **desarrollador senior a su lado** que:
 
 📖 Para más detalles técnicos, consulta:
 - [AI_RULES.md](../AI_RULES.md) - Reglas técnicas completas
+- [COMPONENTS.md](../instructions/COMPONENTS.md) - Reglas técnicas completas
 - [DESIGN_SYSTEM.md](../instructions/DESIGN_SYSTEM.md) - Sistema de diseño
 - [database-actions-guide.md](../instructions/database-actions-guide.md) - Guía de base de datos
 - [SECURITY.md](../instructions/SECURITY.md) - Guía de seguridad

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { api } from './_trpc/Provider';
-import { Button, Card, Badge, Loader, Modal, useToast } from '~/ui/components';
+import { Button, Card, Badge, Loader, Modal, useToast, Avatar, Navbar } from '~/ui/components';
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,40 +22,17 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-lycsa-verde-50 to-lycsa-beige-50">
+    <main className="min-h-screen bg-linear-to-br from-lycsa-verde-50 to-lycsa-beige-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-6 py-3">
-          <div className="flex items-center justify-between">
-            {/* Logo y nombre */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-lycsa-verde-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-aller-bold text-xl">L</span>
-              </div>
-              <div>
-                <h1 className="text-lg font-aller-bold text-gray-900">Template Embajadores</h1>
-                <p className="text-xs text-gray-500 font-aller-light">Lycsa Suite</p>
-              </div>
-            </div>
-
-            {/* User Profile */}
-            <div className="flex items-center gap-2">
-              <div className="text-right">
-                <p className="text-sm font-aller-bold text-gray-900">Usuario Demo</p>
-                <p className="text-xs text-gray-500 font-aller-light">Desarrollador</p>
-              </div>
-              <div className="w-10 h-10 bg-lycsa-verde-100 rounded-full flex items-center justify-center">
-                <span className="text-lycsa-verde-700 font-aller-bold text-sm">UD</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar>
+        <Avatar name="Template Embajadores" description="LYCSA Suite" positionName="right" />
+        <Avatar name="Usuario Demo" description="Desarrollador" positionName="left" />
+      </Navbar>
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Status Card */}
-          <Card title="Estado del Sistema" padding="lg">
+          <Card title="Estado del Sistema">
             {healthQuery.isLoading ? (
               <Loader size="sm" text="Verificando..." />
             ) : (
@@ -78,7 +55,7 @@ export default function HomePage() {
           </Card>
 
           {/* Database Card */}
-          <Card title="Base de Datos" padding="lg">
+          <Card title="Base de Datos">
             {dbStatusQuery.isLoading ? (
               <Loader size="sm" text="Verificando conexiones..." />
             ) : (
@@ -100,7 +77,7 @@ export default function HomePage() {
                       dbStatusQuery.data?.secondary === 'connected'
                         ? 'success'
                         : dbStatusQuery.data?.secondary === 'not_configured'
-                        ? 'default'
+                        ? 'secondary'
                         : 'error'
                     }
                   >
@@ -116,7 +93,6 @@ export default function HomePage() {
         <Card
           title="Características del Template"
           subtitle="Todo lo que incluye este template"
-          padding="lg"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
@@ -144,30 +120,22 @@ export default function HomePage() {
         </Card>
 
         {/* Actions */}
-        <Card title="Componentes de UI" padding="lg" className="mt-6">
+        <Card title="Componentes de UI">
           <div className="flex flex-wrap gap-3">
-            <Button onClick={() => handleTestToast('success')}>Toast Success</Button>
-            <Button variant="secondary" onClick={() => handleTestToast('error')}>
-              Toast Error
-            </Button>
-            <Button variant="outline" onClick={() => handleTestToast('warning')}>
-              Toast Warning
-            </Button>
-            <Button variant="ghost" onClick={() => handleTestToast('info')}>
-              Toast Info
-            </Button>
-            <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-              Abrir Modal
-            </Button>
+            <Button label='Toast Success' onClick={() => handleTestToast('success')} />
+            <Button label='Toast Error' variant='contained' color="error" onClick={() => handleTestToast('error')} />
+            <Button label='Toast Warning' variant="outline" color='warning' onClick={() => handleTestToast('warning')} />
+            <Button label='Toast Info' variant="text" color='info' onClick={() => handleTestToast('info')} />
+            <Button label='Abrir Modal' variant='contained' color="secondary" onClick={() => setIsModalOpen(true)} />
           </div>
         </Card>
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <p className="text-gray-600 font-aller-light">
+          <p className="text-gray-600">
             Template generado para <span className="font-aller-bold text-lycsa-verde-600">Lycsa Suite</span>
           </p>
-          <p className="text-sm text-gray-500 font-aller-light mt-1">
+          <p className="text-sm text-gray-500 mt-1 font-aller-light">
             Listo para desarrollo de aplicaciones fullstack
           </p>
         </div>
@@ -180,10 +148,8 @@ export default function HomePage() {
         title="Modal de Ejemplo"
         footer={
           <div className="flex gap-3 justify-end">
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={() => setIsModalOpen(false)}>Aceptar</Button>
+            <Button variant="outline" label='Cancelar' onClick={() => setIsModalOpen(false)} />
+            <Button label="Aceptar" onClick={() => setIsModalOpen(false)} />
           </div>
         }
       >

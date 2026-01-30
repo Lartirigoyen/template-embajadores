@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Dev: Iniciar proyecto",
+        "label": "Build & Run",
         "type": "shell",
-        "command": "if (-not (Test-Path node_modules)) { npm install }; npm run dev",
+        "command": "npm install; npm run dev",
         "options": {
           "cwd": "${workspaceFolder}"
         },
@@ -19,7 +19,8 @@
           }
         },
         "runOptions": {
-          "runOn": "folderOpen"
+          "instanceLimit": 1,
+          "reevaluateOnRerun": true
         },
         "presentation": {
           "reveal": "always",
@@ -30,26 +31,6 @@
         "group": {
           "kind": "build",
           "isDefault": true
-        }
-      },
-      {
-        "label": "Dev: Solo Next.js (rápido)",
-        "type": "shell",
-        "command": "npx next dev",
-        "options": { "cwd": "${workspaceFolder}" },
-        "isBackground": true,
-        "problemMatcher": {
-          "owner": "typescript",
-          "pattern": { "regexp": "^$" },
-          "background": {
-            "activeOnStart": true,
-            "beginsPattern": ".",
-            "endsPattern": "Ready|started|compiled|Local:|✓"
-          }
-        },
-        "presentation": {
-          "reveal": "always",
-          "panel": "dedicated"
         }
       }
     ]

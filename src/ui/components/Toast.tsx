@@ -130,7 +130,7 @@ export const ToastItem = ({ toast, onRemove }: ToastItemProps) => {
 
   return (
     <div
-      className={`flex items-center gap-2 px-4 py-3 rounded-lycsa border-l-4 shadow-lycsa-lg min-w-75 max-w-md animate-slide-in ${typeStyles[toast.type]}`}
+      className={`flex items-center gap-2 px-4 py-3 rounded-lycsa border-l-4 shadow-lycsa-sm min-w-75 max-w-md animate-slide-in ${typeStyles[toast.type]}`}
     >
       {icons[toast.type]}
       <Typography variant='paragraph-sm' as="p" className='flex-1'>{toast.message}</Typography>

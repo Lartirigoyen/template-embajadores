@@ -85,9 +85,10 @@
   --font-aller-light: "Aller Light", system-ui, sans-serif;
   --font-sans: var(--font-aller);
 
-  --shadow-lycsa: 0 8px 32px rgba(0, 97, 73, 0.12);
-  --shadow-lycsa-header: 0 6px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lycsa-card: 0 4px 16px rgba(0, 97, 73, 0.08);
+  /* ---------- SOMBRAS ---------- */
+  --shadow-lycsa-sm: 0 2px 8px rgba(89, 88, 87, 0.08);
+  --shadow-lycsa-md: 0 4px 16px rgba(89, 88, 87, 0.10);
+  --shadow-lycsa-lg: 0 8px 32px rgba(89, 88, 87, 0.12);
 
   --radius-lycsa: 8px;
 }

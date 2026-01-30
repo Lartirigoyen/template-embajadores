@@ -27,7 +27,7 @@ export const Card = ({
 }: CardProps) => {
   return (
     <div
-      className={`h-max flex flex-col gap-4 p-4 bg-white rounded-lycsa shadow-lycsa max-w-full ${classNameContainer}`}
+      className={`h-max flex flex-col gap-4 p-4 bg-white rounded-lycsa shadow-lycsa-md max-w-full ${classNameContainer}`}
       style={{ position: 'relative' }}
     >
       {(title || subtitle) && (

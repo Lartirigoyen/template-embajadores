@@ -53,7 +53,7 @@ export const Switch = ({
             borderRadius: height / 2
           }}
         >
-          <div className='absolute bg-white rounded-full shadow-lycsa'
+          <div className='absolute bg-white rounded-full shadow-lycsa-md'
             style={{
               width: circle,
               height: circle,

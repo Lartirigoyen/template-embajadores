@@ -17,7 +17,7 @@ export const Navbar = ({
 }: NavbarProps) => {
   return (
     <nav
-      className={`w-full flex items-center px-4 py-2 bg-white ${shadow ? 'shadow-lycsa-header' : ''} z-50 ${className}`}
+      className={`w-full flex items-center px-4 py-2 bg-white ${shadow ? 'shadow-lycsa-md' : ''} z-50 ${className}`}
       style={{
         position,
         top: position === 'sticky' || position === 'fixed' ? 0 : undefined,

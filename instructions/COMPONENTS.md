@@ -15,6 +15,7 @@ Antes de crear cualquier componente nuevo, **SIEMPRE** verificar en este documen
 ```tsx
 // Importar componentes principales
 import {
+  Accordion,
   Alert,
   Avatar,
   Badge,
@@ -35,6 +36,7 @@ import {
   Table,
   TablePagination,
   Tabs,
+  Tile,
   ToastProvider,
   useToast,
   Typography,
@@ -75,6 +77,66 @@ Ejemplo de uso en un input:
 ---
 
 ## 🎨 Componentes de UI
+
+### Accordion
+
+Componente para mostrar secciones colapsables con soporte para múltiples items expandidos.
+
+```tsx
+// Accordion básico
+const items = [
+  { id: '1', summary: 'Sección 1', details: 'Contenido de la sección 1' },
+  { id: '2', summary: 'Sección 2', details: 'Contenido de la sección 2' },
+  { id: '3', summary: 'Sección 3', details: 'Contenido de la sección 3', disabled: true },
+];
+
+<Accordion items={items} />
+
+// Accordion con múltiples secciones expandidas
+<Accordion items={items} multiple defaultExpanded={['1', '2']} />
+
+// Accordion controlado
+const [expanded, setExpanded] = useState<string[]>(['1']);
+
+<Accordion 
+  items={items} 
+  expanded={expanded} 
+  onChange={setExpanded}
+  variant="outlined"
+  size="lg"
+/>
+
+// Con iconos personalizados
+<Accordion 
+  items={[
+    { id: '1', summary: 'Configuración', details: <ConfigPanel />, icon: <IconSettings /> },
+    { id: '2', summary: 'Usuario', details: <UserPanel />, icon: <IconUser /> },
+  ]}
+/>
+```
+
+**Props:**
+- `items`: AccordionItem[] (requerido) - Array de items del accordion
+- `defaultExpanded`: string | string[] - IDs expandidos por defecto (no controlado)
+- `expanded`: string | string[] - IDs expandidos (controlado)
+- `onChange`: (expandedIds: string[]) => void - Callback al cambiar estado
+- `multiple`: boolean - Permitir múltiples secciones expandidas (default: false)
+- `variant`: 'default' | 'outlined' | 'elevation' (default: 'default')
+- `size`: 'sm' | 'md' | 'lg' (default: 'md')
+- `className`: string - Clases adicionales
+
+**AccordionItem:**
+```tsx
+interface AccordionItem {
+  id: string;              // REQUERIDO: Identificador único
+  summary: React.ReactNode; // REQUERIDO: Título/encabezado del item
+  details: React.ReactNode; // REQUERIDO: Contenido expandible
+  icon?: React.ReactNode;   // Ícono opcional
+  disabled?: boolean;       // Deshabilitar item
+}
+```
+
+---
 
 ### Alert
 
@@ -750,6 +812,48 @@ interface TabItem {
   badge?: string | number; // Badge opcional
 }
 ```
+
+---
+
+### Tile
+
+Componente para mostrar tarjetas compactas con icono/imagen, título y descripción.
+
+```tsx
+// Tile básico
+<Tile 
+  title="Mi Tile" 
+  description="Descripción del tile" 
+/>
+
+// Tile con emoji/icono de texto
+<Tile 
+  icon="🚀" 
+  title="Nuevo Proyecto" 
+  description="Inicia un nuevo proyecto desde cero" 
+/>
+
+// Tile con imagen
+<Tile 
+  src="/images/feature.png" 
+  title="Característica" 
+  description="Una característica increíble del producto" 
+/>
+
+// Grid de Tiles
+<div className="grid grid-cols-3 gap-4">
+  <Tile icon="📊" title="Reportes" description="Ver todos los reportes" />
+  <Tile icon="⚙️" title="Configuración" description="Ajustar preferencias" />
+  <Tile icon="👥" title="Usuarios" description="Gestionar usuarios" />
+</div>
+```
+
+**Props:**
+- `title`: string (requerido) - Título del tile
+- `description`: string (requerido) - Descripción del tile
+- `icon`: string - Emoji o texto para mostrar como ícono
+- `src`: string - URL de imagen (alternativa a icon)
+- `className`: string - Clases adicionales
 
 ---
 

@@ -190,7 +190,7 @@ export const Select = ({
           </div>
           {open && !disabled && (
             <div className='absolute top-full left-0 right-0 mt-1 p-1
-              rounded-lycsa z-1000 bg-white border border-gray-medium shadow-lycsa'
+              rounded-lycsa z-1000 bg-white border border-gray-medium shadow-lycsa-md'
             >
               <div className='max-h-40 overflow-y-auto'>
                 {filteredOptions.length === 0 ? (

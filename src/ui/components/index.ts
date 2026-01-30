@@ -1,6 +1,7 @@
 export * from './forms';
 
 export { Alert } from './Alert';
+export { Accordion } from './Accordion';
 export { Avatar } from './Avatar';
 export { Badge } from './Badge';
 export { Breadcrumb } from './Breadcrumb';
@@ -21,4 +22,5 @@ export { Table } from './Table';
 export { TablePagination } from './TablePagination';
 export { ToastProvider, useToast } from './Toast';
 export { Tabs } from './Tabs';
+export { Tile } from './Tile';
 export { Typography } from './Typography';

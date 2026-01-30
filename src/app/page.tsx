@@ -2,11 +2,35 @@
 
 import { useState } from 'react';
 import { api } from './_trpc/Provider';
-import { Button, Card, Badge, Loader, Modal, useToast, Avatar, Navbar } from '~/ui/components';
+import { Button, Card, Badge, Loader, Modal, useToast, Avatar, Navbar, Accordion, Tile } from '~/ui/components';
+import { IconSettings } from '@tabler/icons-react';
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToast } = useToast();
+
+  const items = [
+    {
+      id: 'panel1',
+      summary: '¿Cómo funciona?',
+      details: 'Explicación detallada del funcionamiento...',
+    },
+    {
+      id: 'panel2',
+      summary: 'Configuración',
+      details: <div>Contenido personalizado con componentes</div>,
+      icon: <IconSettings />,
+    },
+    {
+      id: 'panel3',
+      summary: 'Deshabilitado',
+      details: 'Este panel está deshabilitado',
+      disabled: true,
+    },
+  ];
+
+    // O con un item abierto por defectos
+    const [expanded, setExpanded] = useState<string[]>(['panel1']);
 
   const healthQuery = api.system.health.useQuery();
   const dbStatusQuery = api.system.dbStatus.useQuery();
@@ -25,7 +49,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-linear-to-br from-lycsa-verde-50 to-lycsa-beige-50">
       {/* Header */}
       <Navbar>
-        <Avatar name="Template Embajadores" description="LYCSA Suite" positionName="right" />
+        <Avatar src='/logo.png' name="Template Embajadores" description="LYCSA Suite" positionName="right" />
         <Avatar name="Usuario Demo" description="Desarrollador" positionName="left" />
       </Navbar>
 
@@ -106,19 +130,23 @@ export default function HomePage() {
               { title: '🐳 Docker', desc: 'Dockerfile multi-stage listo' },
               { title: '🔒 TypeScript', desc: 'Full type-safety en todo el stack' },
             ].map((feature, index) => (
-              <div
-                key={index}
-                className="p-4 bg-white rounded-lycsa border border-gray-200 hover:shadow-lycsa transition-shadow"
-              >
-                <h3 className="font-aller-bold text-lycsa-verde-700 mb-1">
-                  {feature.title}
-                </h3>
-                <p className="text-sm font-aller-light text-gray-600">{feature.desc}</p>
-              </div>
+              <Tile title={feature.title} description={feature.desc} />
             ))}
           </div>
         </Card>
 
+        <div className='my-4 flex flex-col gap-4'>
+          <Accordion items={items} defaultExpanded="panel1" />
+
+          <Accordion 
+            items={items} 
+            expanded={expanded} 
+            onChange={setExpanded} 
+            multiple 
+            variant="outlined"
+          />
+        </div>
+        
         {/* Actions */}
         <Card title="Componentes de UI">
           <div className="flex flex-wrap gap-3">

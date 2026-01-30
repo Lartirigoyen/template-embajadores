@@ -30,13 +30,13 @@ export const Button = ({
 
   const colorClasses = {
     contained: {
-      primary: 'bg-primary-800 text-white hover:bg-primary-700 focus:ring-primary-800',
-      secondary: 'bg-secondary-800 text-white hover:bg-secondary-700 focus:ring-secondary-600',
-      gray: 'bg-gray-dark text-white hover:bg-gray-medium focus:ring-gray-dark',
-      success: 'bg-success text-white hover:bg-success-dark focus:ring-success',
-      warning: 'bg-warning text-white hover:bg-warning-dark focus:ring-warning',
-      info: 'bg-info text-white hover:bg-info-dark focus:ring-info',
-      error: 'bg-error text-white hover:bg-error-dark focus:ring-error',
+      primary: 'bg-primary-800 text-white hover:bg-primary-700 focus:ring-primary-800 shadow-lycsa-md',
+      secondary: 'bg-secondary-800 text-white hover:bg-secondary-700 focus:ring-secondary-600 shadow-lycsa-md',
+      gray: 'bg-gray-dark text-white hover:bg-gray-medium focus:ring-gray-dark shadow-lycsa-md',
+      success: 'bg-success text-white hover:bg-success-dark focus:ring-success shadow-lycsa-md',
+      warning: 'bg-warning text-white hover:bg-warning-dark focus:ring-warning shadow-lycsa-md ',
+      info: 'bg-info text-white hover:bg-info-dark focus:ring-info shadow-lycsa-md',
+      error: 'bg-error text-white hover:bg-error-dark focus:ring-error shadow-lycsa-md',
     },
     outline: {
       primary: 'border border-primary-800 text-primary-800 hover:bg-primary-100 focus:ring-primary-800',

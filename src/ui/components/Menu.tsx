@@ -89,7 +89,7 @@ export const Menu = ({
       id={id}
       ref={menuRef}
       aria-labelledby={ariaLabelledby}
-      className={`min-w-50 bg-white rounded-lycsa shadow-lg border border-gray-light p-1 mt-1 ${className || ''}`}
+      className={`min-w-50 bg-white rounded-lycsa shadow-lycsa-sm border border-gray-light p-1 mt-1 ${className || ''}`}
       style={style}
     >
       {children}

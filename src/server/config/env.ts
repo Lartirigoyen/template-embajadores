@@ -6,7 +6,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Base de datos principal
-  DATABASE_URL: z.string().url().optional(),
+  DATABASE_URL: z.string().url(),
 
   // Base de datos secundaria (opcional)
   DATABASE_SECONDARY_URL: z.string().url().optional(),

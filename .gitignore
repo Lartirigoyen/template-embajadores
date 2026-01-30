@@ -42,7 +42,7 @@ drizzle/
 # IDE
 .vscode/*
 !.vscode/settings.json
-!.vscode/extensions.json
+!.vscode/tasks.json
 .idea
 *.swp
 *.swo

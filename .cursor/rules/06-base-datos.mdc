@@ -1,0 +1,111 @@
+---
+globs: src/server/db/**/*.ts
+alwaysApply: false
+---
+# Convenciones de base de datos
+
+## 🗄️ Reglas obligatorias
+
+### 1. Doble ID (CRÍTICO para seguridad)
+
+```typescript
+// ❌ MAL - Solo un ID
+id: bigserial('id', { mode: 'number' }).primaryKey()
+
+// ✅ BIEN - Doble ID
+id: bigserial('id', { mode: 'number' }).primaryKey(), // Uso interno
+idPublico: uuid('id_publico').notNull().defaultRandom().unique(), // Para API/Frontend
+```
+
+**¿Por qué doble ID?**
+- `id` (número): Rápido para la base de datos, pero predecible
+- `idPublico` (UUID): Seguro para exponer en URLs y APIs, imposible de adivinar, previene enumeración, oculta volumen de datos
+
+### 2. Campos obligatorios en TODAS las tablas
+
+  - id (BIGSERIAL PRIMARY KEY)
+  - id_publico (UUID UNIQUE con índice)
+  - fecha_creacion (TIMESTAMPTZ)
+  - fecha_actualizacion (TIMESTAMPTZ)
+  - activo (BOOLEAN, para soft delete)
+  - adicional (JSONB)
+
+### 3. Nombres en español, snake_case
+
+```typescript
+// ✅ BIEN
+fecha_creacion, nombre_completo, correo_electronico
+
+// ❌ MAL
+createdAt, fullName, email
+```
+
+**Convención de nombres:**
+- Tablas: `usuarios`, `productos`, `ordenes`
+- Columnas: `nombre_completo`, `fecha_nacimiento`, `correo_electronico`
+- Todo en minúsculas con guiones bajos
+
+### 4. Esquemas de base de datos
+
+Usar esquemas para organizar tablas:
+
+- `app` - Tablas principales de la aplicación
+- `audit` - Logs y auditoría
+- `scraping` - Datos temporales o externos
+
+> **NUNCA usar el esquema public**
+
+Definir el schema con `pgSchema` y crear las tablas usando `appSchema.table`:
+
+```typescript
+import { pgSchema } from 'drizzle-orm/pg-core';
+
+const appSchema = pgSchema('app');
+
+export const usuarios = appSchema.table('usuarios', {
+  // campos...
+}, (table) => ({
+  // índices y constraints
+}));
+
+// Se guarda en: src/server/db/schema/app/usuarios.ts
+```
+
+## 🔒 Borrado lógico (soft delete)
+
+**NUNCA borres registros físicamente.** Usa el campo `activo`:
+
+```typescript
+// ❌ MAL - Borrado físico
+await db.delete(usuarios).where(eq(usuarios.id, userId));
+
+// ✅ BIEN - Borrado lógico
+await db.update(usuarios)
+  .set({ activo: false })
+  .where(eq(usuarios.id, userId));
+```
+
+## 📝 Ejemplo Completo
+
+```typescript
+import { pgSchema, bigserial, uuid, varchar, timestamp, boolean, jsonb } from 'drizzle-orm/pg-core';
+
+const appSchema = pgSchema('app');
+
+export const productos = appSchema.table('productos', {
+  // IDs obligatorios
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  idPublico: uuid('id_publico').notNull().defaultRandom().unique(),
+  
+  // Campos de negocio
+  nombre: varchar('nombre', { length: 255 }).notNull(),
+  descripcion: varchar('descripcion', { length: 1000 }),
+  precio: numeric('precio', { precision: 10, scale: 2 }).notNull(),
+  
+  // Campos de control obligatorios
+  fechaCreacion: timestamp('fecha_creacion', { withTimezone: true }).notNull().defaultNow(),
+  fechaActualizacion: timestamp('fecha_actualizacion', { withTimezone: true }).notNull().defaultNow(),
+  activo: boolean('activo').notNull().default(true),
+  adicional: jsonb('adicional').$type<Record<string, any>>(),
+});
+```

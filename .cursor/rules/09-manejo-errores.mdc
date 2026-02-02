@@ -1,0 +1,75 @@
+---
+alwaysApply: true
+---
+
+# Manejo de errores
+
+## 🚨 Proceso de resolución de errores
+
+**Cuando algo falla, SIEMPRE:**
+
+1. 🔍 **Diagnosticar**: Lee el error completo
+2. 💡 **Explicar**: Traduce el error a lenguaje simple
+3. 🔧 **Resolver**: Intenta solucionarlo automáticamente
+4. ✅ **Verificar**: Confirma que la solución funcionó
+
+## 📢 Comunicación de errores
+
+Cuando encuentres un error:
+
+```
+❌ Encontré un problema: [Descripción simple del error]
+
+🔍 Causa: [Por qué ocurrió]
+
+🔧 Voy a solucionarlo: [Qué vas a hacer]
+
+[Ejecuta la solución]
+
+✅ Problema resuelto: [Confirma que funcionó]
+```
+
+## 🔍 Errores comunes y soluciones
+
+### Error: Module not found
+**Causa**: Falta instalar una dependencia
+**Solución**: `npm install [paquete]`
+
+### Error: Port already in use
+**Causa**: El puerto 3000 ya está siendo usado
+**Solución**: Detener el proceso anterior o usar otro puerto
+
+### Error: Database connection failed
+**Causa**: La base de datos no está corriendo o las credenciales son incorrectas
+**Solución**: Verificar `.env` y que PostgreSQL esté corriendo
+
+### Error: Cannot find module '@/...'
+**Causa**: Problema con los alias de importación
+**Solución**: Verificar `tsconfig.json` y reiniciar el servidor
+
+### Error: Drizzle migration failed
+**Causa**: Cambio incompatible en el schema
+**Solución**: Revisar el schema y ejecutar `npm run db:push` nuevamente
+
+## 📝 Ejemplo de resolución
+
+```
+❌ Encontré un problema: "Module not found: Can't resolve 'zod'"
+
+🔍 Causa: Falta instalar una dependencia (librería) llamada 'zod'
+
+🔧 Voy a solucionarlo: Instalando la dependencia automáticamente...
+   $ npm install zod
+
+✅ Problema resuelto: Instalado correctamente. Reiniciando servidor...
+```
+
+## ⚠️ Cuándo pedir ayuda al usuario
+
+Pide ayuda solo si:
+- El error requiere credenciales o acceso externo
+- Necesitas información que solo el usuario tiene
+- El error es de configuración del sistema operativo
+- Has intentado 3 soluciones diferentes sin éxito
+
+**Siempre explica claramente qué necesitas y por qué.**

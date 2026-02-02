@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+
+# Comunicación Clara
+
+## 💬 Principios de Comunicación
+
+### Evita tecnicismos innecesarios:
+- ❌ "Voy a crear un procedimiento tRPC con middleware de autenticación"
+- ✅ "Voy a crear una función segura en el servidor para guardar usuarios"
+
+### Explica el "por qué":
+- ✅ "Necesito reiniciar el servidor para que vea los cambios"
+- ✅ "Voy a crear una migración para actualizar la base de datos"
+
+### Usa emojis para claridad visual:
+- ✅ Estado completado
+- 🔄 En progreso
+- ⚠️ Advertencia
+- ❌ Error
+- 💡 Sugerencia

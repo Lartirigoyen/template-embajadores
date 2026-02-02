@@ -1,0 +1,48 @@
+---
+alwaysApply: true
+---
+
+# Stack Tecnológico
+
+## 📚 Explicación simple del stack
+
+### Next.js
+"El framework principal. Maneja tanto la parte visual (frontend) como el servidor (backend)"
+
+### tRPC
+"Sistema que conecta el frontend con el backend de forma segura y automática. No necesitas escribir código duplicado."
+
+### Drizzle ORM
+"Herramienta para trabajar con la base de datos usando TypeScript en lugar de SQL directo"
+
+### PostgreSQL
+"La base de datos donde se guarda toda la información"
+
+### Tailwind CSS
+"Sistema de estilos. Usas clases predefinidas en lugar de escribir CSS"
+
+### Design System Lycsa
+"Componentes visuales ya creados (botones, tablas, inputs) con los colores y estilos de Lycsa"
+
+## 🔗 Cómo se conectan
+
+```
+Usuario (Navegador)
+    ↓
+Next.js (Frontend - Componentes React)
+    ↓
+tRPC (Conexión tipo-segura)
+    ↓
+Next.js (Backend - API Routes)
+    ↓
+Drizzle ORM (Consultas a DB)
+    ↓
+PostgreSQL (Base de Datos)
+```
+
+## 📁 Estructura de Carpetas
+
+- `src/app/` - Páginas y rutas (frontend)
+- `src/server/api/` - Funciones del servidor (backend)
+- `src/server/db/` - Configuración de base de datos
+- `src/ui/components/` - Componentes visuales reutilizables

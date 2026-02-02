@@ -1,0 +1,159 @@
+---
+description: "Guía para crear y usar routers tRPC con validación Zod, queries y mutations. Aplica al trabajar con APIs del servidor."
+globs:
+  - "src/server/api/routers/**"
+  - "src/server/api/root.ts"
+  - "src/server/api/trpc.ts"
+alwaysApply: false
+---
+# tRPC - Routers y Procedimientos
+
+## 🔌 ¿Qué es tRPC?
+
+tRPC conecta el frontend con el backend de forma segura y automática. No necesitas escribir código duplicado ni preocuparte por tipos.
+
+## 📁 Ubicación
+
+Los routers se crean en: `src/server/api/routers/`
+
+## 🏗️ Estructura de un router
+
+```typescript
+import { z } from 'zod';
+import { createTRPCRouter, publicProcedure } from '../trpc';
+import { miTabla } from '@/server/db/schema';
+import { eq } from 'drizzle-orm';
+
+export const miRouter = createTRPCRouter({
+  // Obtener lista (Query)
+  listar: publicProcedure
+    .query(async ({ ctx }) => {
+      return await ctx.db.select().from(miTabla).where(eq(miTabla.activo, true));
+    }),
+  
+  // Crear (Mutation)
+  crear: publicProcedure
+    .input(z.object({
+      nombre: z.string(),
+      email: z.string().email(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const [registro] = await ctx.db.insert(miTabla)
+        .values(input)
+        .returning();
+      return registro;
+    }),
+  
+  // Obtener por ID (Query)
+  obtenerPorId: publicProcedure
+    .input(z.object({
+      idPublico: z.string().uuid(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const [registro] = await ctx.db.select()
+        .from(miTabla)
+        .where(eq(miTabla.idPublico, input.idPublico));
+      return registro;
+    }),
+  
+  // Actualizar (Mutation)
+  actualizar: publicProcedure
+    .input(z.object({
+      idPublico: z.string().uuid(),
+      nombre: z.string().optional(),
+      email: z.string().email().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { idPublico, ...datos } = input;
+      const [actualizado] = await ctx.db.update(miTabla)
+        .set(datos)
+        .where(eq(miTabla.idPublico, idPublico))
+        .returning();
+      return actualizado;
+    }),
+  
+  // Eliminar (Mutation - Soft Delete)
+  eliminar: publicProcedure
+    .input(z.object({
+      idPublico: z.string().uuid(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.update(miTabla)
+        .set({ activo: false })
+        .where(eq(miTabla.idPublico, input.idPublico));
+      return { success: true };
+    }),
+});
+```
+
+## 📝 Tipos de procedimientos
+
+### Query (Consultar)
+- Para **obtener** información
+- No modifica datos
+- Usa `.query()`
+
+### Mutation (Modificar)
+- Para **crear, actualizar o eliminar** datos
+- Modifica la base de datos
+- Usa `.mutation()`
+
+## 🔒 Validación con Zod
+
+Siempre valida los inputs con Zod:
+
+```typescript
+.input(z.object({
+  nombre: z.string().min(1, "El nombre es requerido"),
+  edad: z.number().min(18, "Debe ser mayor de edad"),
+  email: z.string().email("Email inválido"),
+  telefono: z.string().optional(),
+}))
+```
+
+## 🎯 Uso en el frontend
+
+```typescript
+'use client';
+import { api } from '@/trpc/react';
+import { Button } from '@/ui/components';
+
+export default function MiComponente() {
+  // Query
+  const { data, isLoading } = api.miRouter.listar.useQuery();
+  
+  // Mutation
+  const crear = api.miRouter.crear.useMutation({
+    onSuccess: () => {
+      console.log('Creado exitosamente');
+    },
+  });
+  
+  const handleCrear = () => {
+    crear.mutate({
+      nombre: 'Juan',
+      email: 'juan@example.com',
+    });
+  };
+  
+  return (
+    <div>
+      {isLoading ? 'Cargando...' : data?.map(item => <div key={item.id}>{item.nombre}</div>)}
+      <Button onClick={handleCrear} label="Crear" />
+    </div>
+  );
+}
+```
+
+## 📋 Registrar el router
+
+No olvides registrar tu router en `src/server/api/root.ts`:
+
+```typescript
+import { miRouter } from './routers/miRouter';
+
+export const appRouter = createTRPCRouter({
+  // ... otros routers
+  miRouter: miRouter,
+});
+```

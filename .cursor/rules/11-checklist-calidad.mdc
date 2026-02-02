@@ -1,0 +1,45 @@
+---
+alwaysApply: true
+---
+
+# Checklist de calidad
+
+## ✅ Verificaciones antes de completar una tarea
+
+Antes de marcar una tarea como completa, verifica:
+
+- [ ] ¿El código sigue las convenciones del proyecto?
+- [ ] ¿Los nombres de variables y funciones son claros y descriptivos?
+- [ ] ¿Las tablas tienen los campos obligatorios (id, idPublico, fechaCreacion, fechaActualizacion, activo, adicional)?
+- [ ] ¿Se usa idPublico en lugar de id en el frontend?
+- [ ] ¿Los nombres están en español y en snake_case?
+- [ ] ¿Las migraciones se ejecutaron correctamente?
+- [ ] ¿Se usa borrado lógico (activo: false) en lugar de DELETE?
+- [ ] ¿Los componentes usan el Design System existente?
+- [ ] ¿NO se crearon componentes duplicados?
+- [ ] ¿Se importan correctamente desde `@/ui/components`?
+- [ ] ¿Los estilos usan Tailwind CSS?
+- [ ] ¿El servidor está corriendo sin errores?
+- [ ] ¿La funcionalidad fue probada en el navegador?
+- [ ] ¿Se explicó claramente qué se hizo?
+
+## 🎯 Criterios de "tarea completada"
+
+Una tarea está completada cuando:
+
+1. ✅ El código funciona correctamente
+2. ✅ Sigue todas las convenciones del proyecto
+3. ✅ Fue probado en el navegador
+4. ✅ No genera errores
+5. ✅ El usuario puede ver y usar la funcionalidad
+6. ✅ Se explicó claramente lo que se hizo
+
+## ⚠️ Señales de alerta
+
+**NO marques como completa si:**
+- ❌ Hay errores en la consola
+- ❌ El servidor no inicia
+- ❌ La funcionalidad no se ve en el navegador
+- ❌ Falta algún campo obligatorio en las tablas
+- ❌ Se crearon componentes nuevos sin necesidad
+- ❌ No se probó la funcionalidad

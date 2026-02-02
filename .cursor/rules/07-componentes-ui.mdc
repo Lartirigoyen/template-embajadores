@@ -1,0 +1,103 @@
+---
+alwaysApply: true
+---
+# Componentes UI - Design System
+
+## ⚠️ REGLA CRÍTICA - NO CREAR COMPONENTES NUEVOS
+
+Este proyecto ya tiene un **Design System completo**. Antes de crear cualquier componente:
+
+1. **VERIFICAR** si ya existe en `src/ui/components/` o `src/ui/components/forms/`
+2. **CONSULTAR** la documentación en `instructions/COMPONENTS.md`
+3. **Si necesitas algo diferente**: Modificar o extender un componente existente
+4. **NUNCA** crear componentes duplicados o similares a los existentes
+
+## 📦 Componentes disponibles
+
+**SIEMPRE usar componentes del Design System** (`src/ui/components/` y `src/ui/components/forms`):
+
+| Componentes UI | Componentes de Formularios |
+|----------------|---------------------------|
+| Alert | Checkbox |
+| Avatar | FileDropzone |
+| Badge | Input |
+| Breadcrumb | InputNumber |
+| Button | RadioGroup |
+| Card | Select |
+| Link | Switch |
+| Loader | TextArea |
+| Menu / MenuItem | |
+| Modal | |
+| Navbar | |
+| Pagination | |
+| Sidebar / SidebarNode | |
+| Skeleton | |
+| Stepper | |
+| Table / TablePagination | |
+| Tabs | |
+| Toast / ToastProvider | |
+| Typography | |
+
+## 🔧 ¿Qué hacer si el componente existente no cubre el caso de uso?
+
+1. **Primero**: Revisar todas las props disponibles en `COMPONENTS.md`
+2. **Segundo**: Verificar si se puede lograr combinando componentes existentes
+3. **Tercero**: Si realmente necesita modificación, **extender el componente existente** agregando nuevas props
+4. **Último recurso**: Solo crear un componente nuevo si es funcionalmente MUY diferente a todos los existentes
+
+## ✅ Ejemplo de extensión correcta
+
+```typescript
+// ❌ MAL - Crear componente nuevo similar
+// src/ui/components/CustomButton.tsx
+export const CustomButton = () => { ... }
+
+// ✅ BIEN - Agregar prop al componente existente
+// src/ui/components/Button.tsx
+interface ButtonProps {
+  // ... props existentes
+  newVariant?: 'special'; // Nueva variante agregada
+}
+```
+
+## 📝 Ejemplo de uso correcto
+
+```typescript
+import { Button, Input, Card } from '@/ui/components';
+
+<Button 
+  label="Guardar" 
+  variant="contained" 
+  color="primary" 
+  size="md" 
+  onClick={handleClick} 
+/>
+
+<Input 
+  label="Nombre"
+  value={nombre}
+  onChange={(e) => setNombre(e.target.value)}
+  error={error}
+/>
+
+<Card>
+  <Typography variant="h2">Título</Typography>
+  <Typography variant="caption">Contenido de la tarjeta</Typography>
+</Card>
+```
+
+## 🎨 Importación de componentes
+
+```typescript
+// Componentes UI generales
+import { Button, Card, Typography, Alert } from '@/ui/components';
+
+// Componentes de formularios
+import { Input, Select, Checkbox, Switch } from '@/ui/components/forms';
+```
+
+## 📖 Documentación
+
+Para ver todas las props y ejemplos de cada componente, consulta:
+- `instructions/COMPONENTS.md` - Documentación completa de componentes
+- `instructions/DESIGN_SYSTEM.md` - Guía de diseño y estilos

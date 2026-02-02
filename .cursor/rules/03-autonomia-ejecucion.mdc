@@ -1,0 +1,96 @@
+---
+alwaysApply: true
+---
+
+# Autonomía y ejecución automática
+
+## ⚡ Principio de autonomía total
+
+**SIEMPRE ejecuta automáticamente:**
+- ✅ Instalación de dependencias (`npm install`)
+- ✅ Inicio del servidor de desarrollo (`npm run dev`), comando que también genera las migraciones de la base de datos
+- ✅ Apertura del navegador (localhost:3000)
+- ✅ Ejecución de scripts necesarios
+- ✅ Creación de archivos y carpetas
+
+**NUNCA digas**: "Debes ejecutar...", "Ahora ejecuta...", "Por favor ejecuta..."
+
+**SIEMPRE haz**: "Ejecutando la migración...", "Iniciando el servidor...", "Instalando dependencias..."
+
+## 🎓 Ejemplos de interacción
+
+### ❌ MAL (Espera acción del usuario)
+```
+Asistente: "Para crear el módulo de usuarios, necesitas:
+1. Ejecutar: npm run db:push
+2. Luego ejecutar: npm run dev
+3. Finalmente abrir localhost:3000"
+```
+
+### ✅ BIEN (Autonomía total)
+```
+Asistente: "Voy a crear el módulo de usuarios. Plan:
+
+📋 Plan:
+1. ✅ Crear schema de base de datos
+2. ✅ Ejecutar migración
+3. ✅ Crear funciones del servidor
+4. ✅ Crear interfaz visual
+5. ✅ Probar funcionalidad
+
+Empezando...
+
+🗄️ Creando tabla 'usuarios' en la base de datos...
+[Crea archivo schema]
+
+🔌 Creando funciones del servidor (tRPC router)...
+[Crea router]
+
+🎨 Aplicando componente visual...
+[Aplica componente]
+
+🔄 Iniciando servidor...
+$ npm run dev
+✅ Servidor corriendo en http://localhost:3000
+
+🌐 Abriendo navegador...
+✅ Todo listo! El módulo de usuarios está funcionando."
+```
+
+## Flujos de trabajo automáticos
+
+### 🚀 Iniciar proyecto (Primera vez)
+
+1. Instalar dependencias automáticamente:
+
+```bash
+npm install
+```
+
+2. Iniciar servidor automáticamente:
+```bash
+npm run dev
+```
+
+3. Abrir navegador automáticamente: **usar**: `open_simple_browser` con `http://localhost:3000`
+
+### ✨ Crear nueva funcionalidad
+
+```markdown
+1. 📋 Crear plan detallado (manage_todo_list)
+2. 🗄️ Si requiere DB: Crear schema
+3. 🔌 Crear router tRPC si es necesario
+4. 🎨 Verificar componentes existentes en Design System y usarlos (NO crear nuevos). En caso de necesitar extensión, modificar el componente existente
+5. 🔄 Si el servidor está corriendo, explicar que se recargará automáticamente
+6. 🌐 Si no está el navegador abierto, abrirlo automáticamente
+7. ✅ Verificar que funcione
+```
+
+### 🗄️ Modificar base de datos
+
+```markdown
+1. 📝 Modificar schema en src/server/db/schema/
+2. 🔄 Ejecutar migración AUTOMÁTICAMENTE: npm run db:push
+3. ✅ Verificar que la migración fue exitosa
+4. 💡 Explicar qué cambió en la base de datos
+```

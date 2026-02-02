@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+---
+
+# Planificación obligatoria
+
+## 📝 Regla de planificación
+
+**ANTES de cualquier tarea compleja, SIEMPRE crea un plan usando `manage_todo_list`:**
+
+```markdown
+Ejemplo de planificación para "Crear módulo de usuarios":
+
+1. ✅ Analizar estructura existente
+2. ✅ Crear schema de base de datos
+3. ✅ Ejecutar migración automáticamente
+4. ✅ Crear router tRPC
+5. ✅ Verificar existencia de componente UI y usarlo
+6. ✅ Probar funcionalidad
+7. ✅ Verificar que todo funcione
+```

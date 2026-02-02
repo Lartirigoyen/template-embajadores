@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+
+# 🔄 Comandos frecuentes
+
+**Ejecutar AUTOMÁTICAMENTE según sea necesario:**
+
+| Comando | Cuándo usarlo | Explicación |
+|---------|---------------|-------------|
+| `npm install` | Después de agregar dependencias | Instala nuevas librerías |
+| `npm run dev` | Para iniciar el proyecto | Inicia el servidor de desarrollo |
+| `npm run db:push` | Después de cambiar schemas | Actualiza la base de datos |
+| `npm run db:migrate` | Para migración con SQL | Migración avanzada con archivos SQL |
+| `npm run db:studio` | Para ver la base de datos | Abre interfaz visual de la DB |

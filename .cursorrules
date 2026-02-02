@@ -2,17 +2,11 @@
 
 > 🤖 Compatible con: **Cursor**, **Claude**, **Cline**, y otros agentes de IA
 
-## 📋 Organización de Reglas
-
-Las reglas de este proyecto están organizadas en **módulos temáticos** para facilitar su mantenimiento y navegación.
+## 📋 Organización de reglas
 
 **Todas las reglas detalladas se encuentran en:** `.cursor/rules/`
 
-## 🚀 Inicio Rápido
-
-### Para Agentes de IA
-
-Cursor carga automáticamente todos los archivos en `.cursor/rules/`. Las reglas están organizadas en 12 módulos:
+Las reglas de este proyecto están organizadas en **11 módulos** para facilitar su mantenimiento y navegación:
 
 1. **Contexto del Usuario** - Perfil del embajador y objetivos
 2. **Planificación** - Usa TODOs para tareas complejas
@@ -30,5 +24,3 @@ Cursor carga automáticamente todos los archivos en `.cursor/rules/`. Las reglas
 
 **Versión**: 2.0 (Modular)  
 **Última actualización**: Febrero 2026
-
-Para más detalles, consulta las reglas modulares en `.cursor/rules/`

@@ -828,7 +828,7 @@ docker compose -f docker-compose.dev.yml up -d db
 ## 📚 Documentación
 
 ### Para Todos
-- 📖 [AI_RULES.md](AI_RULES.md) - Reglas técnicas del proyecto
+- 📖 [.cursorrules](.cursorrules) - Reglas técnicas del proyecto
 - 🎨 [Design System](instructions/DESIGN_SYSTEM.md) - Componentes UI
 - 🗄️ [Base de Datos](instructions/database-actions-guide.md) - Schemas y migraciones
 - 🔒 [Seguridad](instructions/SECURITY.md) - Best practices

@@ -25,7 +25,16 @@ COPY . .
 
 # Variables de entorno necesarias para el build
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
+
+# Variables de entorno para el build (sin valores por defecto)
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG NODE_ENV
+
+# Establecer las variables de entorno para Vite
+ENV DATABASE_URL=$DATABASE_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NODE_ENV=$NODE_ENV
 
 # Build de Next.js
 RUN npm run build
